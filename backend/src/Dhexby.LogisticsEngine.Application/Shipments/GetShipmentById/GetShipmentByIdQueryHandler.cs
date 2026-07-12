@@ -19,9 +19,7 @@ public sealed class GetShipmentByIdQueryHandler : IRequestHandler<GetShipmentByI
         Shipment? shipment = await _shipmentRepository.GetByIdAsync(request.ShipmentId, cancellationToken);
 
         if (shipment is null)
-        {
             return Result.Failure<ShipmentResponse>(ShipmentErrors.NotFound(request.ShipmentId));
-        }
 
         return ShipmentResponse.FromDomain(shipment);
     }

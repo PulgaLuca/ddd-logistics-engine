@@ -25,42 +25,30 @@ public sealed class CreateShipmentCommandHandler : IRequestHandler<CreateShipmen
     {
         Result<TrackingNumber> trackingNumberResult = TrackingNumber.Create(request.TrackingNumber);
         if (trackingNumberResult.IsFailure)
-        {
             return Result.Failure<Guid>(trackingNumberResult.Error);
-        }
 
         Result<Address> originResult = CreateAddress(request.Origin);
         if (originResult.IsFailure)
-        {
             return Result.Failure<Guid>(originResult.Error);
-        }
 
         Result<Address> destinationResult = CreateAddress(request.Destination);
         if (destinationResult.IsFailure)
-        {
             return Result.Failure<Guid>(destinationResult.Error);
-        }
 
         Result<Weight> weightResult = Weight.Create(request.WeightInKilograms);
         if (weightResult.IsFailure)
-        {
             return Result.Failure<Guid>(weightResult.Error);
-        }
 
         bool trackingNumberInUse = await _shipmentRepository.ExistsByTrackingNumberAsync(
             trackingNumberResult.Value,
             cancellationToken);
 
         if (trackingNumberInUse)
-        {
             return Result.Failure<Guid>(ShipmentErrors.TrackingNumberAlreadyInUse);
-        }
 
         Result<Money> priceResult = _pricingService.CalculatePrice(weightResult.Value, request.IsExpress);
         if (priceResult.IsFailure)
-        {
             return Result.Failure<Guid>(priceResult.Error);
-        }
 
         Result<Shipment> shipmentResult = Shipment.Create(
             trackingNumberResult.Value,
@@ -72,9 +60,7 @@ public sealed class CreateShipmentCommandHandler : IRequestHandler<CreateShipmen
             DateTime.UtcNow);
 
         if (shipmentResult.IsFailure)
-        {
             return Result.Failure<Guid>(shipmentResult.Error);
-        }
 
         await _shipmentRepository.AddAsync(shipmentResult.Value, cancellationToken);
 

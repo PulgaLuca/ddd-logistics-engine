@@ -9,5 +9,3 @@ public sealed record CreateShipmentCommand(
     AddressDto Destination,
     decimal WeightInKilograms,
     bool IsExpress) : IRequest<Result<Guid>>;
-
-public sealed record AddressDto(string Street, string City, string PostalCode, string Country);

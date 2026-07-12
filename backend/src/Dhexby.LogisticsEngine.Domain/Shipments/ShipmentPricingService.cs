@@ -10,18 +10,16 @@ public sealed class ShipmentPricingService : IShipmentPricingService
 {
     public const string Currency = "EUR";
 
-    private const decimal BasePrice = 5.00m;
-    private const decimal PricePerKilogram = 1.20m;
-    private const decimal ExpressMultiplier = 1.5m;
+    private const decimal _basePrice = 5.00m;
+    private const decimal _pricePerKilogram = 1.20m;
+    private const decimal _expressMultiplier = 1.5m;
 
     public Result<Money> CalculatePrice(Weight weight, bool isExpress)
     {
-        decimal amount = BasePrice + (weight.Kilograms * PricePerKilogram);
+        decimal amount = _basePrice + (weight.Kilograms * _pricePerKilogram);
 
         if (isExpress)
-        {
-            amount *= ExpressMultiplier;
-        }
+            amount *= _expressMultiplier;
 
         return Money.Create(amount, Currency);
     }

@@ -20,14 +20,10 @@ public sealed class Weight : ValueObject
     public static Result<Weight> Create(decimal kilograms)
     {
         if (kilograms <= 0)
-        {
             return Result.Failure<Weight>(ShipmentErrors.WeightNotPositive);
-        }
 
         if (kilograms > MaxKilograms)
-        {
             return Result.Failure<Weight>(ShipmentErrors.WeightTooHeavy);
-        }
 
         return new Weight(kilograms);
     }

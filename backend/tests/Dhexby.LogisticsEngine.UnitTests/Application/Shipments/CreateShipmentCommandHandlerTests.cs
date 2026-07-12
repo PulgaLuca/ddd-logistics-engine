@@ -1,3 +1,4 @@
+using Dhexby.LogisticsEngine.Application.Shipments;
 using Dhexby.LogisticsEngine.Application.Shipments.CreateShipment;
 using Dhexby.LogisticsEngine.Domain.Shipments;
 using Dhexby.LogisticsEngine.UnitTests.Domain.Shipments;

@@ -10,7 +10,7 @@ namespace Dhexby.LogisticsEngine.Infrastructure.Persistence;
 /// </summary>
 public sealed class JsonShipmentRepository : IShipmentRepository, IDisposable
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new()
+    private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         WriteIndented = true,
     };
@@ -38,9 +38,7 @@ public sealed class JsonShipmentRepository : IShipmentRepository, IDisposable
         }
     }
 
-    public async Task<bool> ExistsByTrackingNumberAsync(
-        TrackingNumber trackingNumber,
-        CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByTrackingNumberAsync(TrackingNumber trackingNumber, CancellationToken cancellationToken = default)
     {
         await _fileLock.WaitAsync(cancellationToken);
         try
@@ -113,7 +111,7 @@ public sealed class JsonShipmentRepository : IShipmentRepository, IDisposable
         }
 
         return await JsonSerializer.DeserializeAsync<List<ShipmentDocument>>(
-            stream, SerializerOptions, cancellationToken) ?? [];
+            stream, _serializerOptions, cancellationToken) ?? [];
     }
 
     private async Task WriteDocumentsAsync(List<ShipmentDocument> documents, CancellationToken cancellationToken)
@@ -125,6 +123,6 @@ public sealed class JsonShipmentRepository : IShipmentRepository, IDisposable
         }
 
         await using FileStream stream = File.Create(_filePath);
-        await JsonSerializer.SerializeAsync(stream, documents, SerializerOptions, cancellationToken);
+        await JsonSerializer.SerializeAsync(stream, documents, _serializerOptions, cancellationToken);
     }
 }

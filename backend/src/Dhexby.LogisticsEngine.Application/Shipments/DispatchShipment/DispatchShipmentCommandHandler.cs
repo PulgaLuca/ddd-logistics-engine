@@ -19,15 +19,11 @@ public sealed class DispatchShipmentCommandHandler : IRequestHandler<DispatchShi
         Shipment? shipment = await _shipmentRepository.GetByIdAsync(request.ShipmentId, cancellationToken);
 
         if (shipment is null)
-        {
             return Result.Failure(ShipmentErrors.NotFound(request.ShipmentId));
-        }
 
         Result dispatchResult = shipment.Dispatch();
         if (dispatchResult.IsFailure)
-        {
             return dispatchResult;
-        }
 
         await _shipmentRepository.UpdateAsync(shipment, cancellationToken);
 
