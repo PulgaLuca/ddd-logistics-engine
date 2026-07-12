@@ -1,4 +1,4 @@
-﻿namespace Dhexby.SharedKernel
+namespace Dhexby.SharedKernel
 {
     public record Error
     {
