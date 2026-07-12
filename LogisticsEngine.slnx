@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/backend/" />
+  <Folder Name="/backend/src/">
+    <Project Path="backend/src/Dhexby.LogisticsEngine.Api/Dhexby.LogisticsEngine.Api.csproj" Id="03cca036-713d-439c-b761-5339efe446f3" />
+    <Project Path="backend/src/Dhexby.LogisticsEngine.Application/Dhexby.LogisticsEngine.Application.csproj" Id="03fd6c74-36ae-439f-933d-266f547aadf1" />
+    <Project Path="backend/src/Dhexby.LogisticsEngine.Domain/Dhexby.LogisticsEngine.Domain.csproj" Id="9d308cff-1ebe-420b-bfe9-f9feadccea0c" />
+    <Project Path="backend/src/Dhexby.LogisticsEngine.Infrastructure/Dhexby.LogisticsEngine.Infrastructure.csproj" Id="4c7f5d53-f212-410f-9295-04f5a9d16206" />
+    <Project Path="backend/src/Dhexby.SharedKernel/Dhexby.SharedKernel.csproj" Id="13c8ea8d-bdb2-4636-8f9f-e90efcfdf5b6" />
+  </Folder>
+  <Folder Name="/backend/tests/">
+    <Project Path="backend/tests/Dhexby.LogisticsEngine.ArchitectureTests/Dhexby.LogisticsEngine.ArchitectureTests.csproj" Id="7f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b" />
+    <Project Path="backend/tests/Dhexby.LogisticsEngine.IntegrationTests/Dhexby.LogisticsEngine.IntegrationTests.csproj" Id="8a2b3c4d-5e6f-4a70-9b0c-1d2e3f4a5b6c" />
+    <Project Path="backend/tests/Dhexby.LogisticsEngine.UnitTests/Dhexby.LogisticsEngine.UnitTests.csproj" Id="b0527c59-8867-46c2-8595-3e50a5db8fcd" />
+  </Folder>
+</Solution>

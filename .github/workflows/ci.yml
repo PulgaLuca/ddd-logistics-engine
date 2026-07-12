@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  SOLUTION: LogisticsEngine.slnx
+
+jobs:
+  build-and-test:
+    name: Build, analyze and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # 1) Restore
+      - name: Restore
+        run: dotnet restore "$SOLUTION"
+
+      # 2) Build + static analysis: gli analyzer Roslyn (EnableNETAnalyzers +
+      #    EnforceCodeStyleInBuild in Directory.Build.props) girano qui, e
+      #    TreatWarningsAsErrors trasforma ogni warning in errore di build.
+      - name: Build (warnings as errors, Roslyn analyzers)
+        run: dotnet build "$SOLUTION" --no-restore --configuration Release
+
+      # 3) Format check: fallisce se il codice non rispetta .editorconfig.
+      - name: Format check
+        run: dotnet format "$SOLUTION" --verify-no-changes --no-restore
+
+      # 4) Unit test + code coverage con soglia minima obbligatoria
+      #    (coverlet.msbuild: sotto l'80% di line coverage il job fallisce).
+      - name: Unit tests + coverage gate
+        run: >
+          dotnet test backend/tests/Dhexby.LogisticsEngine.UnitTests
+          --no-build --configuration Release
+          --logger "trx;LogFileName=unit-tests.trx"
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput=../../../coverage/
+          /p:Threshold=80
+          /p:ThresholdType=line
+          /p:ThresholdStat=total
+          /p:Include="[Dhexby.LogisticsEngine.Domain]*%2c[Dhexby.LogisticsEngine.Application]*"
+
+      # 5) Architecture test: regole di dipendenza tra layer e convenzioni
+      #    di naming (Command/Query/Handler, repository in Infrastructure).
+      - name: Architecture tests
+        run: >
+          dotnet test backend/tests/Dhexby.LogisticsEngine.ArchitectureTests
+          --no-build --configuration Release
+          --logger "trx;LogFileName=architecture-tests.trx"
+
+      # 6) Integration test: API HTTP end-to-end via WebApplicationFactory.
+      - name: Integration tests
+        run: >
+          dotnet test backend/tests/Dhexby.LogisticsEngine.IntegrationTests
+          --no-build --configuration Release
+          --logger "trx;LogFileName=integration-tests.trx"
+
+      # 7) Artefatti oggettivi per la code review (report coverage + trx).
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: ignore
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "**/TestResults/*.trx"
+          if-no-files-found: ignore

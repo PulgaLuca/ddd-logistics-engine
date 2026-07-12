@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dhexby.SharedKernel\Dhexby.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

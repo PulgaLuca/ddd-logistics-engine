@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <!-- Override transitivo: la 2.0.0 portata da AspNetCore.OpenApi ha una vulnerabilità nota (NU1903). -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dhexby.LogisticsEngine.Application\Dhexby.LogisticsEngine.Application.csproj" />
+    <ProjectReference Include="..\Dhexby.LogisticsEngine.Infrastructure\Dhexby.LogisticsEngine.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

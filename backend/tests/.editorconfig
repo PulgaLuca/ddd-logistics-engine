@@ -1,0 +1,6 @@
+# Regole aggiuntive valide solo per i progetti di test.
+
+[*.cs]
+# I nomi dei test seguono la convenzione Metodo_Scenario_EsitoAtteso:
+# gli underscore sono voluti e leggibili, CA1707 non si applica qui.
+dotnet_diagnostic.CA1707.severity = none

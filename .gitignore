@@ -1,0 +1,24 @@
+# Build results
+bin/
+obj/
+out/
+TestResults/
+coverage/
+*.coverage
+coverage.*.xml
+coverage.json
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Local runtime data (JSON persistence)
+backend/src/Dhexby.LogisticsEngine.Api/data/
+*.db
+
+# OS
+Thumbs.db
+.DS_Store
