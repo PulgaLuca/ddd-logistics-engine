@@ -20,14 +20,10 @@ public sealed class Money : ValueObject
     public static Result<Money> Create(decimal amount, string? currency)
     {
         if (amount < 0)
-        {
             return Result.Failure<Money>(ShipmentErrors.MoneyNegative);
-        }
 
         if (currency is null || currency.Trim().Length != 3)
-        {
             return Result.Failure<Money>(ShipmentErrors.MoneyInvalidCurrency);
-        }
 
         return new Money(decimal.Round(amount, 2), currency.Trim().ToUpperInvariant());
     }

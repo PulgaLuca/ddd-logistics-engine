@@ -87,9 +87,7 @@ public sealed class Shipment : Entity
     public Result Dispatch()
     {
         if (Status != ShipmentStatus.Pending)
-        {
             return Result.Failure(ShipmentErrors.NotPending);
-        }
 
         Status = ShipmentStatus.InTransit;
         RaiseDomainEvent(new ShipmentDispatchedDomainEvent(Id));
@@ -101,9 +99,7 @@ public sealed class Shipment : Entity
     public Result MarkAsDelivered(DateTime utcNow)
     {
         if (Status != ShipmentStatus.InTransit)
-        {
             return Result.Failure(ShipmentErrors.NotInTransit);
-        }
 
         Status = ShipmentStatus.Delivered;
         DeliveredOnUtc = utcNow;
@@ -116,9 +112,7 @@ public sealed class Shipment : Entity
     public Result Cancel()
     {
         if (Status != ShipmentStatus.Pending)
-        {
             return Result.Failure(ShipmentErrors.CannotCancel);
-        }
 
         Status = ShipmentStatus.Cancelled;
         RaiseDomainEvent(new ShipmentCancelledDomainEvent(Id));

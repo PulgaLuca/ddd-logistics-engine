@@ -1,3 +1,4 @@
+using Dhexby.LogisticsEngine.Application.Shipments;
 using Dhexby.LogisticsEngine.Application.Shipments.CreateShipment;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
