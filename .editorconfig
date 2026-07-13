@@ -30,6 +30,11 @@ dotnet_diagnostic.CA1716.severity = none
 # (Success/Failure/ValidationFailure): è intenzionale, CA1000 non si applica.
 dotnet_diagnostic.CA1000.severity = none
 
+# Le strutture dati di dominio modellano deliberatamente Stack/Queue/PriorityQueue
+# (DispatchHistoryStack, OrderProcessingQueue, ...): consentiamo questi suffissi
+# mantenendo CA1711 attiva per tutti gli altri.
+dotnet_code_quality.CA1711.allowed_suffixes = Stack|Queue
+
 # --- Naming conventions ---
 # Interfaces must start with I
 dotnet_naming_rule.interfaces_begin_with_i.symbols = interface_symbols

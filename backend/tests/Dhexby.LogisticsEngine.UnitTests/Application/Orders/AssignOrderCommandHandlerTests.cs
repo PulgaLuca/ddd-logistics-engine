@@ -1,6 +1,7 @@
 using Dhexby.LogisticsEngine.Application.Orders.AssignOrder;
 using Dhexby.LogisticsEngine.Domain.Hubs;
 using Dhexby.LogisticsEngine.Domain.Orders;
+using Dhexby.LogisticsEngine.Domain.Orders.Dispatching;
 using Dhexby.LogisticsEngine.UnitTests.Application.Hubs;
 using Dhexby.SharedKernel;
 
@@ -10,11 +11,12 @@ public class AssignOrderCommandHandlerTests
 {
     private readonly InMemoryOrderRepository _orderRepository = new();
     private readonly InMemoryHubRepository _hubRepository = new();
+    private readonly DispatchHistoryStack _dispatchHistory = new();
     private readonly AssignOrderCommandHandler _handler;
 
     public AssignOrderCommandHandlerTests()
     {
-        _handler = new AssignOrderCommandHandler(_orderRepository, _hubRepository);
+        _handler = new AssignOrderCommandHandler(_orderRepository, _hubRepository, _dispatchHistory);
     }
 
     private static Order CreateOrder() => Order.Create(
