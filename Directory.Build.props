@@ -1,18 +1,41 @@
 <Project>
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisLevel>latest-recommended</AnalysisLevel>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-    <!-- Richiesto perché IDE0005 (using inutilizzati) giri in compilazione;
-         CS1591 (doc XML mancante sui membri pubblici) resta disattivato. -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup>
+
+        <!-- Framework di destinazione dell'applicazione -->
+        <TargetFramework>net10.0</TargetFramework>
+
+        <!-- Abilita gli using impliciti (System, Collections, Linq, etc.) -->
+        <ImplicitUsings>enable</ImplicitUsings>
+
+        <!-- Abilita i tipi nullable e l'analisi relativa -->
+        <Nullable>enable</Nullable>
+
+        <!-- Considera tutti i warning del compilatore come errori -->
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <!-- Abilita gli analyzer .NET integrati -->
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+        <!-- Utilizza il livello di analisi raccomandato più recente -->
+        <AnalysisLevel>latest-recommended</AnalysisLevel>
+
+        <!-- Applica le regole di Code Style anche durante la build -->
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+        <!-- Considera come errori anche i warning generati dagli analyzer -->
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+
+        <!-- Genera automaticamente il file XML della documentazione -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <!--
+      Sopprime warning specifici.
+      CS1591 = manca la documentazione XML per membri pubblici.
+      Utile quando si genera la documentazione ma non si vuole
+      documentare ogni API pubblica.-->
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    </PropertyGroup>
 
 </Project>
