@@ -35,11 +35,6 @@ public sealed class ShipmentsController : ControllerBase
     /// </summary>
     [HttpPost]
 
-    [SwaggerOperation(
-        Summary = "Crea uno Shipment",
-        Description = "Crea un nuovo Shipment e restituisce il relativo identificatore."
-    )]
-
     // Se tutto va bene restituisce HTTP 201 Created con il Guid creato.
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
 
