@@ -1,128 +1,43 @@
-using System.Text.Json;
 using Dhexby.LogisticsEngine.Domain.Shipments;
 using Microsoft.Extensions.Options;
 
 namespace Dhexby.LogisticsEngine.Infrastructure.Persistence;
 
 /// <summary>
-/// Implementazione concreta del repository su file JSON (registrata come
-/// singleton; il semaforo serializza gli accessi concorrenti al file).
+/// Repository di Shipment su file JSON, basato su <see cref="JsonEntityRepository{TDocument}"/>.
 /// </summary>
-public sealed class JsonShipmentRepository : IShipmentRepository, IDisposable
+internal sealed class JsonShipmentRepository : JsonEntityRepository<ShipmentDocument>, IShipmentRepository
 {
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    public JsonShipmentRepository(IOptions<JsonStorageOptions> options)
+        : base(options.Value.ShipmentsFilePath)
     {
-        WriteIndented = true,
-    };
-
-    private readonly SemaphoreSlim _fileLock = new(1, 1);
-    private readonly string _filePath;
-
-    public JsonShipmentRepository(IOptions<ShipmentStorageOptions> options)
-    {
-        _filePath = options.Value.ShipmentsFilePath;
     }
 
-    public async Task<Shipment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await _fileLock.WaitAsync(cancellationToken);
-        try
-        {
-            List<ShipmentDocument> documents = await ReadDocumentsAsync(cancellationToken);
+    public Task<Shipment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        QueryAsync(documents => documents.Find(document => document.Id == id)?.ToDomain(), cancellationToken);
 
-            return documents.Find(document => document.Id == id)?.ToDomain();
-        }
-        finally
-        {
-            _fileLock.Release();
-        }
-    }
+    public Task<bool> ExistsByTrackingNumberAsync(
+        TrackingNumber trackingNumber,
+        CancellationToken cancellationToken = default) =>
+        QueryAsync(
+            documents => documents.Exists(document => document.TrackingNumber == trackingNumber.Value),
+            cancellationToken);
 
-    public async Task<bool> ExistsByTrackingNumberAsync(TrackingNumber trackingNumber, CancellationToken cancellationToken = default)
-    {
-        await _fileLock.WaitAsync(cancellationToken);
-        try
-        {
-            List<ShipmentDocument> documents = await ReadDocumentsAsync(cancellationToken);
+    public Task AddAsync(Shipment shipment, CancellationToken cancellationToken = default) =>
+        MutateAsync(documents => documents.Add(ShipmentDocument.FromDomain(shipment)), cancellationToken);
 
-            return documents.Exists(document => document.TrackingNumber == trackingNumber.Value);
-        }
-        finally
-        {
-            _fileLock.Release();
-        }
-    }
-
-    public async Task AddAsync(Shipment shipment, CancellationToken cancellationToken = default)
-    {
-        await _fileLock.WaitAsync(cancellationToken);
-        try
-        {
-            List<ShipmentDocument> documents = await ReadDocumentsAsync(cancellationToken);
-
-            documents.Add(ShipmentDocument.FromDomain(shipment));
-
-            await WriteDocumentsAsync(documents, cancellationToken);
-        }
-        finally
-        {
-            _fileLock.Release();
-        }
-    }
-
-    public async Task UpdateAsync(Shipment shipment, CancellationToken cancellationToken = default)
-    {
-        await _fileLock.WaitAsync(cancellationToken);
-        try
-        {
-            List<ShipmentDocument> documents = await ReadDocumentsAsync(cancellationToken);
-
-            int index = documents.FindIndex(document => document.Id == shipment.Id);
-            if (index < 0)
+    public Task UpdateAsync(Shipment shipment, CancellationToken cancellationToken = default) =>
+        MutateAsync(
+            documents =>
             {
-                throw new InvalidOperationException(
-                    $"Cannot update shipment '{shipment.Id}': not found in the JSON store.");
-            }
+                int index = documents.FindIndex(document => document.Id == shipment.Id);
+                if (index < 0)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot update shipment '{shipment.Id}': not found in the JSON store.");
+                }
 
-            documents[index] = ShipmentDocument.FromDomain(shipment);
-
-            await WriteDocumentsAsync(documents, cancellationToken);
-        }
-        finally
-        {
-            _fileLock.Release();
-        }
-    }
-
-    public void Dispose() => _fileLock.Dispose();
-
-    private async Task<List<ShipmentDocument>> ReadDocumentsAsync(CancellationToken cancellationToken)
-    {
-        if (!File.Exists(_filePath))
-        {
-            return [];
-        }
-
-        await using FileStream stream = File.OpenRead(_filePath);
-
-        if (stream.Length == 0)
-        {
-            return [];
-        }
-
-        return await JsonSerializer.DeserializeAsync<List<ShipmentDocument>>(
-            stream, _serializerOptions, cancellationToken) ?? [];
-    }
-
-    private async Task WriteDocumentsAsync(List<ShipmentDocument> documents, CancellationToken cancellationToken)
-    {
-        string? directory = Path.GetDirectoryName(_filePath);
-        if (!string.IsNullOrEmpty(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-
-        await using FileStream stream = File.Create(_filePath);
-        await JsonSerializer.SerializeAsync(stream, documents, _serializerOptions, cancellationToken);
-    }
+                documents[index] = ShipmentDocument.FromDomain(shipment);
+            },
+            cancellationToken);
 }

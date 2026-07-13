@@ -5,7 +5,6 @@ using Dhexby.LogisticsEngine.Application.Shipments.GetShipmentById;
 using Dhexby.SharedKernel;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
 

@@ -20,6 +20,8 @@ namespace Dhexby.SharedKernel
 
         public static Error Failure(string code, string description) => new(code, description, ErrorType.Failure);
 
+        public static Error Validation(string code, string description) => new(code, description, ErrorType.Validation);
+
         public static Error NotFound(string code, string description) => new(code, description, ErrorType.NotFound);
 
         public static Error Problem(string code, string description) => new(code, description, ErrorType.Problem);

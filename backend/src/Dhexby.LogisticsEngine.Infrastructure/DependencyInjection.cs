@@ -1,4 +1,7 @@
+using Dhexby.LogisticsEngine.Domain.Hubs;
+using Dhexby.LogisticsEngine.Domain.Orders;
 using Dhexby.LogisticsEngine.Domain.Shipments;
+using Dhexby.LogisticsEngine.Domain.Zones;
 using Dhexby.LogisticsEngine.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,10 +18,13 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<ShipmentStorageOptions>(
-            configuration.GetSection(ShipmentStorageOptions.SectionName));
+        services.Configure<JsonStorageOptions>(
+            configuration.GetSection(JsonStorageOptions.SectionName));
 
         services.AddSingleton<IShipmentRepository, JsonShipmentRepository>();
+        services.AddSingleton<IOrderRepository, JsonOrderRepository>();
+        services.AddSingleton<IHubRepository, JsonHubRepository>();
+        services.AddSingleton<IZoneRepository, JsonZoneRepository>();
 
         return services;
     }

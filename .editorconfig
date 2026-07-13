@@ -26,6 +26,10 @@ dotnet_diagnostic.IDE0005.severity = warning
 # keyword riservata di altri linguaggi (CA1716) qui non è rilevante.
 dotnet_diagnostic.CA1716.severity = none
 
+# Il Result pattern espone factory statiche sul tipo generico Result<T>
+# (Success/Failure/ValidationFailure): è intenzionale, CA1000 non si applica.
+dotnet_diagnostic.CA1000.severity = none
+
 # --- Naming conventions ---
 # Interfaces must start with I
 dotnet_naming_rule.interfaces_begin_with_i.symbols = interface_symbols
