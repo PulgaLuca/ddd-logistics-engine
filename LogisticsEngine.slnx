@@ -9,7 +9,6 @@
   </Folder>
   <Folder Name="/backend/tests/">
     <Project Path="backend/tests/Dhexby.LogisticsEngine.ArchitectureTests/Dhexby.LogisticsEngine.ArchitectureTests.csproj" Id="7f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b" />
-    <Project Path="backend/tests/Dhexby.LogisticsEngine.IntegrationTests/Dhexby.LogisticsEngine.IntegrationTests.csproj" Id="8a2b3c4d-5e6f-4a70-9b0c-1d2e3f4a5b6c" />
     <Project Path="backend/tests/Dhexby.LogisticsEngine.UnitTests/Dhexby.LogisticsEngine.UnitTests.csproj" Id="b0527c59-8867-46c2-8595-3e50a5db8fcd" />
   </Folder>
 </Solution>

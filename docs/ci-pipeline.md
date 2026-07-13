@@ -2,10 +2,10 @@
 
 ## Flusso di lavoro
 
-1. **Branch dedicato** — ogni funzionalità nasce su un branch (`feature/...`).
-2. **Pull Request verso `main`** — mai push diretto su `main`.
-3. **Controlli automatici** — la pipeline [.github/workflows/ci.yml](../.github/workflows/ci.yml) parte a ogni push e PR.
-4. **Code review** — il reviewer legge i dati oggettivi prodotti dalla pipeline (esito step, coverage, test results).
+1. **Branch dedicato** - ogni funzionalità nasce su un branch (`feature/...`).
+2. **Pull Request verso `main`** - mai push diretto su `main`.
+3. **Controlli automatici** - la pipeline [.github/workflows/ci.yml](../.github/workflows/ci.yml) parte a ogni push e PR.
+4. **Code review** - il reviewer legge i dati oggettivi prodotti dalla pipeline (esito step, coverage, test results).
 5. **Merge consentito solo se i controlli obbligatori passano** (branch protection, vedi sotto).
 
 ## Cosa esegue la pipeline

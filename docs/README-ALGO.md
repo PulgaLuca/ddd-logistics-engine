@@ -1,32 +1,6 @@
-# 🧠 STRUTTURA DIDATTICA INCREMENTALE (ROADMAP)
+# ROADMAP DSA in ddd-logistics-engine
 
-## 🟩 FASE 0 — Foundation (setup mentale + code base)
-
-### Obiettivo
-
-Far capire:
-
-* separazione livelli
-* dominio vs infrastruttura
-* niente EF / API ancora
-
-### Deliverable
-
-```text
-AlgorithmLabs/
-Domain/
-SharedKernel/
-```
-
-### Concetti
-
-* Result pattern
-* Error handling
-* Entity vs Value Object (base)
-
----
-
-# 🟦 FASE 1 — Data Structures CORE
+## **FASE 1 — Data Structures CORE**
 
 ## 1. Stack → Undo Dispatch
 
@@ -90,7 +64,7 @@ OrderDispatchPriorityQueue
 
 ---
 
-# 🟨 FASE 2 — TREES + STRUCTURING
+# **FASE 2 — TREES + STRUCTURING**
 
 ## 4. Trees → Delivery Zones
 
@@ -114,29 +88,7 @@ DeliveryZone (aggregate)
 
 ---
 
-## 5. Trie → Address Search
-
-### Algoritmo
-
-* prefix tree
-
-### Use case
-
-```text
-autocomplete indirizzi
-```
-
-### Integrazione
-
-* Read model / Query side
-
-```text
-AddressSearchService
-```
-
----
-
-# 🟧 FASE 3 — GRAPH CORE
+# **FASE 3 — GRAPH CORE**
 
 ## 6. Graph Basics → Road Network
 
@@ -169,7 +121,7 @@ NetworkAnalysisService
 
 ---
 
-# 🟥 FASE 4 — ROUTING ENGINE
+# **FASE 4 — ROUTING ENGINE**
 
 ## 8. Dijkstra → Shortest Path
 
@@ -185,7 +137,7 @@ best route between hubs
 IRouteCalculationService
 ```
 
-👉 primo vero Domain Service importante
+primo vero Domain Service importante
 
 ---
 
@@ -201,11 +153,11 @@ IRouteCalculationService
 SmartRoutePlanner : IRouteCalculationService
 ```
 
-👉 Strategy Pattern
+Strategy Pattern
 
 ---
 
-# 🟪 FASE 5 — OPTIMIZATION
+# **FASE 5 — OPTIMIZATION**
 
 ## 10. Greedy Algorithms → Courier Assignment
 
@@ -232,15 +184,7 @@ CourierAssignmentStrategy
 
 ---
 
-# 🟫 FASE 6 — ADVANCED STRUCTURES
-
-## 12. Union-Find → Delivery Zones clustering
-
-### Use case
-
-```text
-group delivery areas
-```
+# **FASE 6 — ADVANCED STRUCTURES**
 
 ---
 
@@ -268,7 +212,7 @@ CachedRouteRepository
 
 ---
 
-# 🟦 FASE 7 — SEARCH + MATCHING
+# **FASE 7 — SEARCH + MATCHING**
 
 ## 15. String Algorithms → Address correction
 
@@ -287,7 +231,7 @@ CachedRouteRepository
 
 ---
 
-# 🟩 FASE 8 — RECOMMENDATION SYSTEMS
+# **FASE 8 — RECOMMENDATION SYSTEMS**
 
 ## 17. Content-based Recommendation
 
@@ -313,7 +257,7 @@ ProductRecommendationService
 users → orders → products graph
 ```
 
-👉 BFS su graph sociale/logistico
+BFS su graph sociale/logistico
 
 ---
 
@@ -327,7 +271,7 @@ users like you also ordered
 
 ---
 
-# 🟥 FASE 9 — REAL-TIME SYSTEM
+# **FASE 9 — REAL-TIME SYSTEM**
 
 ## 20. Event-driven tracking system
 
@@ -352,7 +296,7 @@ TrackingProjection
 
 ---
 
-# 🟪 FASE 10 — SYSTEM INTEGRATION (FINAL PROJECT)
+# **FASE 10 — SYSTEM INTEGRATION**
 
 Qui tutto converge:
 
@@ -378,7 +322,7 @@ Recommendation system updates
 
 ---
 
-# 🧩 ARCHITETTURA INTEGRATA (FINALE)
+# ARCHITETTURA INTEGRATA (FINALE)
 
 ```text
 API Layer
@@ -401,62 +345,3 @@ Infrastructure Layer
    ├── EF Core
    └── External APIs
 ```
-
----
-
-# 📈 PROGRESSIONE DIDATTICA (CHIAVE)
-
-## Livello 1
-
-👉 strutture dati isolate
-
-## Livello 2
-
-👉 use case semplici
-
-## Livello 3
-
-👉 domain modeling
-
-## Livello 4
-
-👉 algoritmi integrati come servizi
-
-## Livello 5
-
-👉 system design completo
-
----
-
-# 🎯 OUTPUT DIDATTICO FINALE
-
-Gli studenti avranno visto:
-
-### Data Structures
-
-* Stack
-* Queue
-* Heap
-* Tree
-* Trie
-* Graph
-* Union-Find
-* Cache (LRU)
-
-### Algorithms
-
-* BFS / DFS
-* Dijkstra / A*
-* Greedy
-* Dynamic Programming
-* String matching
-* Recommendation algorithms
-
-### Software Engineering
-
-* DDD
-* Clean Architecture
-* CQRS (light)
-* Domain Events
-* Strategy Pattern
-* Dependency inversion
