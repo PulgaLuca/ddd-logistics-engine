@@ -321,27 +321,3 @@ Recommendation system updates
 ```
 
 ---
-
-# ARCHITETTURA INTEGRATA (FINALE)
-
-```text
-API Layer
-   ↓
-Application Layer
-   ↓
-Domain Layer
-   ├── Order Aggregate
-   ├── Courier Aggregate
-   ├── Package
-   ├── TrackingEntry
-   └── Domain Services:
-        - Routing (Dijkstra/A*)
-        - Assignment (Greedy)
-        - Recommendation
-   ↓
-Infrastructure Layer
-   ├── Graph engine
-   ├── Cache (LRU)
-   ├── EF Core
-   └── External APIs
-```
