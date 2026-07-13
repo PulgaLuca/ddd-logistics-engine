@@ -15,4 +15,6 @@ public sealed class JsonStorageOptions
     public string HubsFilePath { get; set; } = Path.Combine("data", "hubs.json");
 
     public string ZonesFilePath { get; set; } = Path.Combine("data", "zones.json");
+
+    public string RoadsFilePath { get; set; } = Path.Combine("data", "roads.json");
 }

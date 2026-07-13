@@ -3,6 +3,7 @@ using Dhexby.LogisticsEngine.Application.Zones;
 using Dhexby.LogisticsEngine.Application.Zones.AddStreetToZone;
 using Dhexby.LogisticsEngine.Application.Zones.CreateZone;
 using Dhexby.LogisticsEngine.Application.Zones.GetZoneById;
+using Dhexby.LogisticsEngine.Application.Zones.GetZoneTree;
 using Dhexby.SharedKernel;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,17 @@ public sealed class ZonesController : ControllerBase
             cancellationToken);
 
         return result.IsSuccess ? NoContent() : result.ToProblemResult();
+    }
+
+    /// <summary>Albero della zona: sottozone annidate e vie (struttura dati: Tree).</summary>
+    [HttpGet("{id:guid}/tree")]
+    [ProducesResponseType(typeof(ZoneTreeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTree(Guid id, CancellationToken cancellationToken)
+    {
+        Result<ZoneTreeResponse> result = await _sender.Send(new GetZoneTreeQuery(id), cancellationToken);
+
+        return result.IsSuccess ? Ok(result.Value) : result.ToProblemResult();
     }
 }
 

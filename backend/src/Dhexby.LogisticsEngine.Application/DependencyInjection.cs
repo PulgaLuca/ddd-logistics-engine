@@ -1,6 +1,8 @@
 using Dhexby.LogisticsEngine.Application.Abstractions.Behaviors;
+using Dhexby.LogisticsEngine.Application.Routing;
 using Dhexby.LogisticsEngine.Domain.Orders.Dispatching;
 using Dhexby.LogisticsEngine.Domain.Orders.Processing;
+using Dhexby.LogisticsEngine.Domain.Routing;
 using Dhexby.LogisticsEngine.Domain.Shipments;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,14 @@ public static class DependencyInjection
         services.AddSingleton<IDispatchHistory, DispatchHistoryStack>();
         services.AddSingleton<IOrderProcessingQueue, OrderProcessingQueue>();
         services.AddSingleton<IOrderDispatchPriorityQueue, OrderDispatchPriorityQueue>();
+
+        // Servizi di routing/analisi di rete (stateless). Le due strategie di
+        // percorso sono registrate come tipo concreto perché gli handler ne
+        // scelgono una specifica (Dijkstra vs A*), pur condividendo IRouteCalculationService.
+        services.AddSingleton<DijkstraRouteCalculationService>();
+        services.AddSingleton<SmartRoutePlanner>();
+        services.AddSingleton<INetworkAnalysisService, NetworkAnalysisService>();
+        services.AddScoped<IRoadNetworkFactory, RoadNetworkFactory>();
 
         return services;
     }

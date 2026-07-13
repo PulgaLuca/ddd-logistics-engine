@@ -1,5 +1,6 @@
 using Dhexby.LogisticsEngine.Domain.Hubs;
 using Dhexby.LogisticsEngine.Domain.Orders;
+using Dhexby.LogisticsEngine.Domain.Routing;
 using Dhexby.LogisticsEngine.Domain.Shipments;
 using Dhexby.LogisticsEngine.Domain.Zones;
 using Dhexby.LogisticsEngine.Infrastructure.Persistence;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddSingleton<IOrderRepository, JsonOrderRepository>();
         services.AddSingleton<IHubRepository, JsonHubRepository>();
         services.AddSingleton<IZoneRepository, JsonZoneRepository>();
+        services.AddSingleton<IRoadRepository, JsonRoadRepository>();
 
         return services;
     }
