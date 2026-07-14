@@ -1,8 +1,6 @@
 using System.Reflection;
 using Dhexby.LogisticsEngine.Api.Controllers;
-using Dhexby.LogisticsEngine.Application;
 using Dhexby.LogisticsEngine.Domain.Shipments;
-using Dhexby.LogisticsEngine.Infrastructure.Persistence;
 
 namespace Dhexby.LogisticsEngine.ArchitectureTests;
 
@@ -10,7 +8,7 @@ namespace Dhexby.LogisticsEngine.ArchitectureTests;
 internal static class ArchitectureAssemblies
 {
     public static readonly Assembly Domain = typeof(Shipment).Assembly;
-    public static readonly Assembly Application = typeof(DependencyInjection).Assembly;
-    public static readonly Assembly Infrastructure = typeof(JsonShipmentRepository).Assembly;
+    public static readonly Assembly Application = typeof(Application.DependencyInjection).Assembly;
+    public static readonly Assembly Infrastructure = typeof(Infrastructure.DependencyInjection).Assembly;
     public static readonly Assembly Api = typeof(ShipmentsController).Assembly;
 }

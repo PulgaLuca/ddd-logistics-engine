@@ -50,6 +50,11 @@ namespace Dhexby.SharedKernel
 
         public static implicit operator Result<TValue>(TValue? value) =>
             value is not null ? Success(value) : Failure<TValue>(Error.NullValue);
+
+        // Usato dalla ValidationBehavior per costruire, via reflection, un
+        // fallimento tipizzato Result<TValue> a partire da un ValidationError.
+        public static Result<TValue> ValidationFailure(Error error) =>
+            new(default, false, error);
     }
 
 }

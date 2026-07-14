@@ -1,12 +1,15 @@
+using System.Text;
 using Dhexby.LogisticsEngine.Application;
 using Dhexby.LogisticsEngine.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Swagger
+// Swagger + supporto al token Bearer (pulsante "Authorize").
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -14,18 +17,56 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Dhexby Logistics Engine API",
         Version = "v1",
-        Description = "API per la gestione degli Shipment."
+        Description = "API per la gestione della logistica."
     });
 
     // Include i commenti XML
     var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
     if (File.Exists(xmlPath))
     {
         options.IncludeXmlComments(xmlPath);
     }
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Incolla qui il token JWT ottenuto da /api/auth/login (senza il prefisso 'Bearer').",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", document),
+            new List<string>()
+        }
+    });
 });
+
+// Autenticazione JWT: valida i token emessi dalla nostra API (sezione "Jwt").
+var jwtSection = builder.Configuration.GetSection("Jwt");
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidAudience = jwtSection["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSection["Key"] ?? string.Empty))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services
     .AddApplication()
@@ -45,10 +86,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 await app.RunAsync();
 
+// Espone la classe Program agli eventuali integration test (WebApplicationFactory<Program>).
 public partial class Program;

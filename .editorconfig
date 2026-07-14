@@ -22,9 +22,22 @@ dotnet_style_qualification_for_event = false
 # Unused usings must fail the build / format check
 dotnet_diagnostic.IDE0005.severity = warning
 
+# I file sono raggruppati in cartelle per entità (Controllers/Shipments, ...)
+# mantenendo però namespace stabili: non imponiamo la corrispondenza cartella-namespace.
+dotnet_diagnostic.IDE0130.severity = none
+
 # 'Error' è il nome idiomatico nel Result pattern: il conflitto con la
 # keyword riservata di altri linguaggi (CA1716) qui non è rilevante.
 dotnet_diagnostic.CA1716.severity = none
+
+# Il Result pattern espone factory statiche sul tipo generico Result<T>
+# (Success/Failure/ValidationFailure): è intenzionale, CA1000 non si applica.
+dotnet_diagnostic.CA1000.severity = none
+
+# Le strutture dati di dominio modellano deliberatamente Stack/Queue/PriorityQueue
+# (DispatchHistoryStack, OrderProcessingQueue, ...): consentiamo questi suffissi
+# mantenendo CA1711 attiva per tutti gli altri.
+dotnet_code_quality.CA1711.allowed_suffixes = Stack|Queue
 
 # --- Naming conventions ---
 # Interfaces must start with I
