@@ -22,6 +22,10 @@ dotnet_style_qualification_for_event = false
 # Unused usings must fail the build / format check
 dotnet_diagnostic.IDE0005.severity = warning
 
+# I file sono raggruppati in cartelle per entità (Controllers/Shipments, ...)
+# mantenendo però namespace stabili: non imponiamo la corrispondenza cartella-namespace.
+dotnet_diagnostic.IDE0130.severity = none
+
 # 'Error' è il nome idiomatico nel Result pattern: il conflitto con la
 # keyword riservata di altri linguaggi (CA1716) qui non è rilevante.
 dotnet_diagnostic.CA1716.severity = none
