@@ -1,9 +1,11 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Routing;
 using Dhexby.LogisticsEngine.Application.Routing.AddRoad;
 using Dhexby.LogisticsEngine.Application.Routing.GetRoadNetwork;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -13,6 +15,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/roads")]
+[Authorize]
 public sealed class RoadsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -28,6 +31,7 @@ public sealed class RoadsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.ManageData)]
     public async Task<IActionResult> Add(AddRoadRequest request, CancellationToken cancellationToken)
     {
         Result<Guid> result = await _sender.Send(request.ToCommand(), cancellationToken);

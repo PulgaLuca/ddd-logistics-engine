@@ -1,3 +1,4 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Orders.Dispatching;
 using Dhexby.LogisticsEngine.Application.Orders.Dispatching.GetDispatchHistory;
@@ -5,6 +6,7 @@ using Dhexby.LogisticsEngine.Application.Orders.Dispatching.RedoDispatch;
 using Dhexby.LogisticsEngine.Application.Orders.Dispatching.UndoDispatch;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -15,6 +17,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/dispatch")]
+[Authorize]
 public sealed class DispatchController : ControllerBase
 {
     private readonly ISender _sender;
@@ -39,6 +42,7 @@ public sealed class DispatchController : ControllerBase
     [ProducesResponseType(typeof(DispatchHistoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.Operate)]
     public async Task<IActionResult> Undo(CancellationToken cancellationToken)
     {
         Result<DispatchHistoryResponse> result = await _sender.Send(new UndoDispatchCommand(), cancellationToken);
@@ -51,6 +55,7 @@ public sealed class DispatchController : ControllerBase
     [ProducesResponseType(typeof(DispatchHistoryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.Operate)]
     public async Task<IActionResult> Redo(CancellationToken cancellationToken)
     {
         Result<DispatchHistoryResponse> result = await _sender.Send(new RedoDispatchCommand(), cancellationToken);

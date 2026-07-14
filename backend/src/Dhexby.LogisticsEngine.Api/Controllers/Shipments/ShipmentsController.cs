@@ -1,9 +1,11 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Shipments;
 using Dhexby.LogisticsEngine.Application.Shipments.DispatchShipment;
 using Dhexby.LogisticsEngine.Application.Shipments.GetShipmentById;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -16,6 +18,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// </summary>
 [ApiController] // Indica che questa classe è un controller API.
 [Route("api/shipments")] // URL base del controller.
+[Authorize] // Serve un utente autenticato; i GET sono aperti a qualunque ruolo.
 public sealed class ShipmentsController : ControllerBase
 {
     // MediatR è il "ponte" tra il Controller e l'Application Layer.
@@ -42,6 +45,7 @@ public sealed class ShipmentsController : ControllerBase
 
     // Se esiste già uno Shipment incompatibile restituisce HTTP 409.
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.ManageData)]
     public async Task<IActionResult> Create(CreateShipmentRequest request, CancellationToken cancellationToken)
     {
         // Il DTO ricevuto dal client viene trasformato in un Command. ToCommand() è un metodo di estensione.
@@ -94,6 +98,7 @@ public sealed class ShipmentsController : ControllerBase
 
     // Lo Shipment non può essere spedito (ad esempio è già stato spedito).
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.Operate)]
     public async Task<IActionResult> Dispatch(Guid id, CancellationToken cancellationToken)
     {
         // Creiamo il Command e lo inviamo.

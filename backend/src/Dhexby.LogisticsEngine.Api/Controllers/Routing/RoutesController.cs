@@ -5,6 +5,7 @@ using Dhexby.LogisticsEngine.Application.Routing.GetShortestRoute;
 using Dhexby.LogisticsEngine.Application.Routing.GetSmartRoute;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -15,6 +16,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/routes")]
+[Authorize]
 public sealed class RoutesController : ControllerBase
 {
     private readonly ISender _sender;

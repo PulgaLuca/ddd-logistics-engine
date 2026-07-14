@@ -1,8 +1,11 @@
+using Dhexby.LogisticsEngine.Application.Abstractions.Authentication;
 using Dhexby.LogisticsEngine.Domain.Hubs;
 using Dhexby.LogisticsEngine.Domain.Orders;
 using Dhexby.LogisticsEngine.Domain.Routing;
 using Dhexby.LogisticsEngine.Domain.Shipments;
+using Dhexby.LogisticsEngine.Domain.Users;
 using Dhexby.LogisticsEngine.Domain.Zones;
+using Dhexby.LogisticsEngine.Infrastructure.Authentication;
 using Dhexby.LogisticsEngine.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +24,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // Servizi di autenticazione, indipendenti dal provider di persistenza.
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
         string? provider = configuration.GetSection(PersistenceOptions.SectionName)["Provider"];
 
         bool useMongo = string.Equals(provider, PersistenceOptions.MongoProvider, StringComparison.OrdinalIgnoreCase);
@@ -39,6 +47,7 @@ public static class DependencyInjection
         services.AddSingleton<IHubRepository, JsonHubRepository>();
         services.AddSingleton<IZoneRepository, JsonZoneRepository>();
         services.AddSingleton<IRoadRepository, JsonRoadRepository>();
+        services.AddSingleton<IUserRepository, JsonUserRepository>();
 
         return services;
     }
@@ -53,6 +62,7 @@ public static class DependencyInjection
         services.AddSingleton<IHubRepository, MongoHubRepository>();
         services.AddSingleton<IZoneRepository, MongoZoneRepository>();
         services.AddSingleton<IRoadRepository, MongoRoadRepository>();
+        services.AddSingleton<IUserRepository, MongoUserRepository>();
 
         return services;
     }

@@ -1,3 +1,4 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Orders;
 using Dhexby.LogisticsEngine.Application.Orders.AssignOrder;
@@ -8,6 +9,7 @@ using Dhexby.LogisticsEngine.Application.Orders.Processing.GetExpressDispatchQue
 using Dhexby.LogisticsEngine.Application.Orders.Processing.GetOrderProcessingQueue;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -18,6 +20,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/orders")]
+[Authorize]
 public sealed class OrdersController : ControllerBase
 {
     private readonly ISender _sender;
@@ -31,6 +34,7 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.ManageData)]
     public async Task<IActionResult> Place(PlaceOrderRequest request, CancellationToken cancellationToken)
     {
         Result<Guid> result = await _sender.Send(request.ToCommand(), cancellationToken);
@@ -54,6 +58,7 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.Operate)]
     public async Task<IActionResult> Assign(Guid id, AssignOrderRequest request, CancellationToken cancellationToken)
     {
         Result result = await _sender.Send(new AssignOrderCommand(id, request.HubId), cancellationToken);

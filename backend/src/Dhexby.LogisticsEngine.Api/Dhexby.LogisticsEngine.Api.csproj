@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <!-- Override transitivo: la 2.0.0 portata da AspNetCore.OpenApi ha una vulnerabilità nota (NU1903). -->
     <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />

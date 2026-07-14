@@ -1,3 +1,4 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Zones;
 using Dhexby.LogisticsEngine.Application.Zones.AddStreetToZone;
@@ -6,6 +7,7 @@ using Dhexby.LogisticsEngine.Application.Zones.GetZoneById;
 using Dhexby.LogisticsEngine.Application.Zones.GetZoneTree;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -13,6 +15,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// <summary>Adapter HTTP delle zone: dipende solo dall'Application layer (MediatR).</summary>
 [ApiController]
 [Route("api/zones")]
+[Authorize]
 public sealed class ZonesController : ControllerBase
 {
     private readonly ISender _sender;
@@ -27,6 +30,7 @@ public sealed class ZonesController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.ManageData)]
     public async Task<IActionResult> Create(CreateZoneRequest request, CancellationToken cancellationToken)
     {
         Result<Guid> result = await _sender.Send(request.ToCommand(), cancellationToken);
@@ -51,6 +55,7 @@ public sealed class ZonesController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.Operate)]
     public async Task<IActionResult> AddStreet(Guid id, AddStreetRequest request, CancellationToken cancellationToken)
     {
         Result result = await _sender.Send(

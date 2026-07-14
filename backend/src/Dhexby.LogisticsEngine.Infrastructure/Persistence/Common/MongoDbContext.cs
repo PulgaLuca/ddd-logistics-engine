@@ -17,6 +17,7 @@ internal sealed class MongoDbContext
     public const string HubsCollection = "hubs";
     public const string ZonesCollection = "zones";
     public const string RoadsCollection = "roads";
+    public const string UsersCollection = "users";
 
     private readonly IMongoDatabase _database;
 

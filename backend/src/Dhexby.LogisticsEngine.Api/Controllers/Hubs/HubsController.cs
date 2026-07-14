@@ -1,9 +1,11 @@
+using Dhexby.LogisticsEngine.Api.Authorization;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Hubs;
 using Dhexby.LogisticsEngine.Application.Hubs.GetHubById;
 using Dhexby.LogisticsEngine.Application.Hubs.RegisterHub;
 using Dhexby.SharedKernel;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dhexby.LogisticsEngine.Api.Controllers;
@@ -11,6 +13,7 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 /// <summary>Adapter HTTP degli hub: dipende solo dall'Application layer (MediatR).</summary>
 [ApiController]
 [Route("api/hubs")]
+[Authorize]
 public sealed class HubsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -24,6 +27,7 @@ public sealed class HubsController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [Authorize(Roles = Roles.ManageData)]
     public async Task<IActionResult> Register(RegisterHubRequest request, CancellationToken cancellationToken)
     {
         Result<Guid> result = await _sender.Send(request.ToCommand(), cancellationToken);
