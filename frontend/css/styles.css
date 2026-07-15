@@ -1,0 +1,298 @@
+:root {
+  --brand: #4f46e5;
+  --brand-dark: #3730a3;
+  --brand-soft: #eef2ff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --bg: #f6f7fb;
+  --line: #e6e8ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+.btn-brand {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.btn-brand:hover {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+}
+
+.text-brand {
+  color: var(--brand);
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.page-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.section-sub {
+  color: var(--muted);
+}
+
+/* ---------- Landing ---------- */
+.landing-nav {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #c7d2fe 0%, transparent 55%),
+    radial-gradient(1000px 500px at 100% 0%, #ddd6fe 0%, transparent 50%),
+    linear-gradient(180deg, #ffffff, var(--bg));
+}
+
+.hero h1 {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.7rem;
+  background: var(--brand);
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.7rem;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 1.3rem;
+}
+
+/* ---------- App layout ---------- */
+.app-shell {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: #0b1220;
+  color: #cbd5e1;
+  padding: 1rem 0.75rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar .brand {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding: 0.5rem 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar .nav-link {
+  color: #cbd5e1;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.15rem;
+}
+
+.sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.sidebar .nav-link.router-link-exact-active {
+  background: var(--brand);
+  color: #fff;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 0.6rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-content {
+  padding: 1.5rem;
+  max-width: 1200px;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+  }
+}
+
+/* ---------- Data fields ---------- */
+.field-table th {
+  color: var(--muted);
+  font-weight: 500;
+  width: 40%;
+  white-space: nowrap;
+}
+
+.field-table td,
+.field-table th {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.badge-role {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+}
+
+/* ---------- Visualizations ---------- */
+.graph-canvas {
+  height: 460px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+}
+
+.queue-track {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem;
+}
+
+.queue-item {
+  min-width: 180px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: 0.7rem;
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+}
+
+.queue-item .pos {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.stack-col {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.4rem;
+  min-height: 60px;
+}
+
+.stack-item {
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.45rem 0.65rem;
+  background: #fff;
+  font-size: 0.82rem;
+}
+
+.locked-card {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1080;
+  padding: 1rem;
+}
+
+.overlay .card {
+  width: min(440px, 100%);
+}
+
+/* ---------- Toasts ---------- */
+.toast-stack {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 1090;
+  max-width: min(92vw, 420px);
+}
+
+.app-toast {
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+}
+
+.app-toast.success {
+  background: #16a34a;
+}
+
+.app-toast.danger {
+  background: #dc2626;
+}
+
+.app-toast.info {
+  background: var(--brand);
+}

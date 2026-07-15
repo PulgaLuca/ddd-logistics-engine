@@ -68,6 +68,13 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// CORS per la SPA lato client. In sviluppo consentiamo qualunque origine
+// (usiamo token Bearer, non cookie, quindi AllowAnyOrigin è sicuro qui).
+const string FrontendCorsPolicy = "frontend";
+builder.Services.AddCors(options =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
@@ -85,6 +92,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(FrontendCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
