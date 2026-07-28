@@ -17,8 +17,11 @@ coverage.json
 
 # Local runtime data (JSON persistence)
 backend/src/Dhexby.LogisticsEngine.Api/data/
+appsettings.json
+appsettings.Development.json
 *.db
 
 # OS
 Thumbs.db
 .DS_Store
+
