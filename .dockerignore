@@ -1,0 +1,33 @@
+# Artefatti di build locali: rallentano il context e possono contenere
+# configurazioni non riproducibili.
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+coverage/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+**/*.user
+**/*.suo
+Thumbs.db
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Dati di runtime della persistenza su file JSON
+backend/src/Dhexby.LogisticsEngine.Api/data/
+
+# Configurazioni locali con segreti: in Docker la configurazione arriva
+# esclusivamente dalle variabili d'ambiente di compose.
+**/appsettings.Development.json
+.env
+
+# Materiale non necessario alla build dell'immagine
+docs/
+**/*.md

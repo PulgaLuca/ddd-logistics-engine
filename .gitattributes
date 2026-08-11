@@ -61,3 +61,11 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# File eseguiti dentro i container Linux: devono restare con line ending LF,
+# altrimenti lo shebang "#!/bin/sh\r" non viene risolto e lo script fallisce.
+###############################################################################
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.conf      text eol=lf

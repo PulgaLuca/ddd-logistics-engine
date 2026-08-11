@@ -26,6 +26,10 @@
 
 <body>
   <div id="app"></div>
+
+  <!-- Configurazione runtime (indirizzo dell'API): in Docker viene rigenerata
+       all'avvio del container nginx. Deve precedere il modulo dell'app. -->
+  <script src="config.runtime.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 

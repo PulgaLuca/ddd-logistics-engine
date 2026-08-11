@@ -1,0 +1,6 @@
+# Le migration sono codice generato da "dotnet ef migrations add": non vanno
+# riscritte a mano, quindi sono escluse da analyzer, code style e dotnet format
+# (la solution compila con TreatWarningsAsErrors + CodeAnalysisTreatWarningsAsErrors).
+[*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

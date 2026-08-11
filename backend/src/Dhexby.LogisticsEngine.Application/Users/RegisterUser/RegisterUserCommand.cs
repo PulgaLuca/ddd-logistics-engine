@@ -1,9 +1,8 @@
-using Dhexby.SharedKernel;
-using MediatR;
+using Dhexby.LogisticsEngine.Application.Abstractions.Messaging;
 
 namespace Dhexby.LogisticsEngine.Application.Users.RegisterUser;
 
 public sealed record RegisterUserCommand(
     string Email,
     string Password,
-    string Role) : IRequest<Result<AuthResponse>>;
+    string Role) : ICommand<AuthResponse>;
