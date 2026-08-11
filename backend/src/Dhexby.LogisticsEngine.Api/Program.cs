@@ -79,7 +79,14 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
+// Endpoint di liveness: lo usa l'healthcheck di Docker Compose per sapere
+// quando l'API è pronta a ricevere traffico.
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+// Allinea lo schema del database prima di servire richieste (solo provider Postgres).
+await app.Services.MigrateDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
@@ -91,7 +98,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// Dentro un container l'API espone solo HTTP (TLS è responsabilità del reverse
+// proxy): il redirect verso HTTPS romperebbe le chiamate del frontend.
+if (!builder.Configuration.GetValue<bool>("DOTNET_RUNNING_IN_CONTAINER"))
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors(FrontendCorsPolicy);
 
@@ -99,6 +111,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health").AllowAnonymous();
 
 await app.RunAsync();
 

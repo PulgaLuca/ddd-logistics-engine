@@ -1,4 +1,5 @@
 using Dhexby.LogisticsEngine.Application.Abstractions.Authentication;
+using Dhexby.LogisticsEngine.Application.Abstractions.Persistence;
 using Dhexby.LogisticsEngine.Domain.Hubs;
 using Dhexby.LogisticsEngine.Domain.Orders;
 using Dhexby.LogisticsEngine.Domain.Routing;
@@ -7,6 +8,7 @@ using Dhexby.LogisticsEngine.Domain.Users;
 using Dhexby.LogisticsEngine.Domain.Zones;
 using Dhexby.LogisticsEngine.Infrastructure.Authentication;
 using Dhexby.LogisticsEngine.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,9 +16,10 @@ namespace Dhexby.LogisticsEngine.Infrastructure;
 
 /// <summary>
 /// Composition root del layer Infrastructure: lega i contratti del dominio
-/// alle implementazioni concrete. Il provider di persistenza (JSON o MongoDB)
-/// è scelto in base alla configurazione: cambiando "Persistence:Provider" si
-/// sostituisce l'intero storage senza toccare Application, Domain o Api.
+/// alle implementazioni concrete. Il provider di persistenza (JSON, MongoDB o
+/// PostgreSQL) è scelto in base alla configurazione: cambiando
+/// "Persistence:Provider" si sostituisce l'intero storage senza toccare
+/// Application, Domain o Api.
 /// </summary>
 public static class DependencyInjection
 {
@@ -24,6 +27,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         // Servizi di autenticazione, indipendenti dal provider di persistenza.
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
@@ -31,11 +36,17 @@ public static class DependencyInjection
 
         string? provider = configuration.GetSection(PersistenceOptions.SectionName)["Provider"];
 
-        bool useMongo = string.Equals(provider, PersistenceOptions.MongoProvider, StringComparison.OrdinalIgnoreCase);
+        return provider switch
+        {
+            not null when Is(provider, PersistenceOptions.PostgresProvider) =>
+                services.AddPostgresPersistence(configuration),
+            not null when Is(provider, PersistenceOptions.MongoProvider) =>
+                services.AddMongoPersistence(configuration),
+            _ => services.AddJsonPersistence(configuration),
+        };
 
-        return useMongo
-            ? services.AddMongoPersistence(configuration)
-            : services.AddJsonPersistence(configuration);
+        static bool Is(string value, string expected) =>
+            string.Equals(value, expected, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IServiceCollection AddJsonPersistence(this IServiceCollection services, IConfiguration configuration)
@@ -48,6 +59,9 @@ public static class DependencyInjection
         services.AddSingleton<IZoneRepository, JsonZoneRepository>();
         services.AddSingleton<IRoadRepository, JsonRoadRepository>();
         services.AddSingleton<IUserRepository, JsonUserRepository>();
+
+        // Store non transazionale: le scritture sono già immediate.
+        services.AddSingleton<IUnitOfWork, NoOpUnitOfWork>();
 
         return services;
     }
@@ -63,6 +77,50 @@ public static class DependencyInjection
         services.AddSingleton<IZoneRepository, MongoZoneRepository>();
         services.AddSingleton<IRoadRepository, MongoRoadRepository>();
         services.AddSingleton<IUserRepository, MongoUserRepository>();
+
+        services.AddSingleton<IUnitOfWork, NoOpUnitOfWork>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Provider PostgreSQL: unico dei tre a offrire transazioni ACID reali,
+    /// quindi l'unico con un Unit of Work "vero". Repository e DbContext sono
+    /// Scoped perché il change tracker deve vivere quanto la singola richiesta.
+    /// </summary>
+    private static IServiceCollection AddPostgresPersistence(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        IConfigurationSection section = configuration.GetSection(PostgresOptions.SectionName);
+        services.Configure<PostgresOptions>(section);
+
+        var options = section.Get<PostgresOptions>() ?? new PostgresOptions();
+
+        if (string.IsNullOrWhiteSpace(options.ConnectionString))
+        {
+            throw new InvalidOperationException(
+                "Persistence:Provider è 'Postgres' ma manca Postgres:ConnectionString " +
+                "(in Docker: variabile d'ambiente Postgres__ConnectionString).");
+        }
+
+        // Nessun EnableRetryOnFailure: la retrying execution strategy di Npgsql
+        // è incompatibile con le transazioni aperte esplicitamente dalla
+        // pipeline (rieseguirebbe l'handler, e con esso gli effetti in memoria).
+        // La resilienza all'avvio è gestita in DatabaseInitializer, dove il
+        // retry è sicuro perché l'unica operazione è la migrazione.
+        services.AddDbContext<LogisticsDbContext>(builder =>
+            builder.UseNpgsql(options.ConnectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__ef_migrations_history", LogisticsDbContext.Schema)));
+
+        services.AddScoped<IShipmentRepository, PostgresShipmentRepository>();
+        services.AddScoped<IOrderRepository, PostgresOrderRepository>();
+        services.AddScoped<IHubRepository, PostgresHubRepository>();
+        services.AddScoped<IZoneRepository, PostgresZoneRepository>();
+        services.AddScoped<IRoadRepository, PostgresRoadRepository>();
+        services.AddScoped<IUserRepository, PostgresUserRepository>();
+
+        services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
         return services;
     }

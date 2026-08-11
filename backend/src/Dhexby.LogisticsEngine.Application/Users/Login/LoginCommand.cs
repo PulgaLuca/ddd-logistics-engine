@@ -1,6 +1,5 @@
-using Dhexby.SharedKernel;
-using MediatR;
+using Dhexby.LogisticsEngine.Application.Abstractions.Messaging;
 
 namespace Dhexby.LogisticsEngine.Application.Users.Login;
 
-public sealed record LoginCommand(string Email, string Password) : IRequest<Result<AuthResponse>>;
+public sealed record LoginCommand(string Email, string Password) : ICommand<AuthResponse>;

@@ -1,0 +1,109 @@
+name: ddd-logistics-engine
+
+services:
+  # ---------------------------------------------------------------------------
+  # Database relazionale: sistema di persistenza primario dell'applicazione.
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:18-alpine
+    container_name: logistics-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-logistics}
+      POSTGRES_USER: ${POSTGRES_USER:-logistics}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-logistics}
+    ports:
+      # Porta host 5433 per default: la 5432 è già occupata da un'eventuale
+      # installazione locale di PostgreSQL.
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      # Dalla versione 18 l'immagine ufficiale organizza i dati in sottocartelle
+      # per major version: il volume va montato su /var/lib/postgresql, non su
+      # /var/lib/postgresql/data (che verrebbe segnalato come "unused mount").
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logistics} -d ${POSTGRES_DB:-logistics}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # API .NET. La configurazione arriva solo da variabili d'ambiente: il doppio
+  # underscore mappa la gerarchia di appsettings (Postgres__ConnectionString
+  # sovrascrive la sezione "Postgres" > "ConnectionString").
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: logistics-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_HTTP_PORTS: "8080"
+
+      Persistence__Provider: Postgres
+      Postgres__ConnectionString: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-logistics};Username=${POSTGRES_USER:-logistics};Password=${POSTGRES_PASSWORD:-logistics}
+      Postgres__MigrateOnStartup: "true"
+
+      Jwt__Key: ${JWT_KEY:-dev-only-0123456789ABCDEF0123456789}
+      Jwt__Issuer: ${JWT_ISSUER:-Dhexby.LogisticsEngine}
+      Jwt__Audience: ${JWT_AUDIENCE:-Dhexby.LogisticsEngine.Api}
+      Jwt__ExpiryMinutes: "120"
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        # L'API parte solo quando il database accetta connessioni.
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # SPA statica servita da nginx.
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: logistics-frontend
+    environment:
+      # Indirizzo con cui il BROWSER raggiunge l'API: è quello pubblicato
+      # sull'host, non il nome del servizio interno alla rete di Compose.
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8080}
+    ports:
+      - "${FRONTEND_PORT:-8081}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Client web per ispezionare il database. Servizio opzionale:
+  #   docker compose --profile tools up -d
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: logistics-pgadmin
+    profiles: ["tools"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@logistics.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "${PGADMIN_PORT:-8082}:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  pgadmin-data:

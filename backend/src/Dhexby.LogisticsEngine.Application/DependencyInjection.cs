@@ -20,7 +20,12 @@ public static class DependencyInjection
         services.AddMediatR(configuration =>
         {
             configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+
+            // L'ordine di registrazione è l'ordine di esecuzione: prima si valida
+            // l'input (niente transazione per una richiesta malformata), poi si
+            // apre il confine transazionale attorno all'handler.
             configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            configuration.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);

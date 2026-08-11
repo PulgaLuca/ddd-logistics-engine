@@ -25,3 +25,6 @@ appsettings.Development.json
 Thumbs.db
 .DS_Store
 
+
+# Variabili d'ambiente locali di Docker Compose (credenziali, porte)
+.env
