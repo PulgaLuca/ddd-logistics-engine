@@ -1,0 +1,20 @@
+bin/
+obj/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+artifacts/
+TestResults/
+coverage/
+*.trx
+node_modules/
+dist/
+.env
+.env.local
+appsettings.*.local.json
+.artifacts/
+
+# Dati locali dell'esempio JSON
+backend/src/LogisticsEngine.WebApi/data/

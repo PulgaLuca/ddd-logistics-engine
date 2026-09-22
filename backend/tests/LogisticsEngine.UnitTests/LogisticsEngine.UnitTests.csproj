@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
+    <ProjectReference Include="../../src/LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
+</Project>
