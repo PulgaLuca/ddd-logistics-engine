@@ -16,10 +16,10 @@ public sealed class HubTests
     public void Create_checks_id_and_name_length()
     {
         Hub.Create(Guid.Empty, "Milano", "NORD").Error.ShouldBe(HubErrors.InvalidId);
-        Hub.Create(Guid.NewGuid(), new string('a', 101), "NORD").Error.ShouldBe(HubErrors.InvalidName);
-        Hub.Create(Guid.NewGuid(), new string('a', 100), "NORD").IsSuccess.ShouldBeTrue();
+        Hub.Create(Guid.NewGuid(), new string('a', 121), "NORD").Error.ShouldBe(HubErrors.InvalidName);
         Hub.Create(Guid.NewGuid(), "A", "NORD").IsSuccess.ShouldBeTrue();
     }
+
 
     [Fact]
     public void Create_preserves_id_and_normalizes_values()

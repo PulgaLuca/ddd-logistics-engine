@@ -21,7 +21,7 @@ public sealed class Hub : Entity
         }
 
         string normalizedName = name?.Trim() ?? string.Empty;
-        if (normalizedName.Length is < 1 or > 100)
+        if (normalizedName.Length is < 1 or > 120)
         {
             return Result.Failure<Hub>(HubErrors.InvalidName);
         }
