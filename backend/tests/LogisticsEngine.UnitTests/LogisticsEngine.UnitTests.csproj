@@ -3,5 +3,7 @@
     <ProjectReference Include="../../src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
     <ProjectReference Include="../../src/LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Remove="coverlet.collector" />
+    <PackageReference Include="coverlet.msbuild" PrivateAssets="all" />
   </ItemGroup>
 </Project>
