@@ -5,7 +5,7 @@ namespace LogisticsEngine.Domain.Hubs;
 public static class HubErrors
 {
     public static readonly Error InvalidId = Error.Validation("Hub.InvalidId", "The hub ID cannot be empty.");
-    public static readonly Error InvalidName = Error.Validation("Hub.InvalidName", "The name must contain 1 to 100 characters.");
+    public static readonly Error InvalidName = Error.Validation("Hub.InvalidName", "The name must contain 1 to 120 characters.");
     public static readonly Error InvalidZone = Error.Validation("Hub.InvalidZone", "The zone must contain 2 to 10 ASCII letters.");
     public static Error NotFound(Guid id) => Error.NotFound("Hub.NotFound", $"Hub '{id}' was not found.");
 }
