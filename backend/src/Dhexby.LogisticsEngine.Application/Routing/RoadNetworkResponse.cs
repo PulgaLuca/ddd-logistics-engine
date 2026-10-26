@@ -8,7 +8,7 @@ public sealed record RoadNetworkResponse(
 public sealed record RoadNetworkNodeResponse(
     Guid HubId,
     string HubCode,
-    string Name,
+    //string Name,
     double Latitude,
     double Longitude);
 

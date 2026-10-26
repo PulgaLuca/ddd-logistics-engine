@@ -22,10 +22,10 @@ internal sealed class HubConfiguration : IEntityTypeConfiguration<HubDocument>
 
         builder.HasIndex(hub => hub.Code).IsUnique();
 
-        builder.Property(hub => hub.Name)
-            .HasColumnName("name")
-            .HasMaxLength(150)
-            .IsRequired();
+        //builder.Property(hub => hub.Name)
+        //    .HasColumnName("name")
+        //    .HasMaxLength(150)
+        //    .IsRequired();
 
         builder.Property(hub => hub.Latitude).HasColumnName("latitude");
         builder.Property(hub => hub.Longitude).HasColumnName("longitude");

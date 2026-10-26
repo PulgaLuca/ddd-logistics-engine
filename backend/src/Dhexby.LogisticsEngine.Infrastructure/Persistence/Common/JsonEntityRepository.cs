@@ -24,9 +24,7 @@ internal abstract class JsonEntityRepository<TDocument> : IDisposable
     }
 
     /// <summary>Legge lo store sotto lock e proietta un risultato.</summary>
-    protected async Task<TResult> QueryAsync<TResult>(
-        Func<List<TDocument>, TResult> query,
-        CancellationToken cancellationToken)
+    protected async Task<TResult> QueryAsync<TResult>(Func<List<TDocument>, TResult> query, CancellationToken cancellationToken)
     {
         await _fileLock.WaitAsync(cancellationToken);
         try

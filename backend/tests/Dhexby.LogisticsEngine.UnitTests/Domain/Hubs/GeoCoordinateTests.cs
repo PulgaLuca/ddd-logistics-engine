@@ -14,6 +14,8 @@ public class GeoCoordinateTests
         Assert.Equal(45.07, result.Value.Latitude);
     }
 
+    // verifica che la creazione di una coordinata geografica fallisca
+    // quando la latitudine è al di fuori dell'intervallo consentito [-90, 90].
     [Theory]
     [InlineData(-91, 0)]
     [InlineData(91, 0)]
@@ -21,7 +23,10 @@ public class GeoCoordinateTests
     {
         Result<GeoCoordinate> result = GeoCoordinate.Create(latitude, longitude);
 
+        // verifica che il risultato rappresenti un fallimento
         Assert.True(result.IsFailure);
+
+        // verifica che l'errore restituito sia quello relativo alla latitudine fuori intervallo
         Assert.Equal(HubErrors.LatitudeOutOfRange, result.Error);
     }
 

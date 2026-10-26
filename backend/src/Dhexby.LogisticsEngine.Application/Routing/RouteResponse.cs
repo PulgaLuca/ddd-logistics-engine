@@ -33,7 +33,7 @@ public sealed record RouteNodeResponse(
     int Position,
     Guid HubId,
     string HubCode,
-    string Name,
+    //string Name,
     double Latitude,
     double Longitude)
 {
@@ -41,7 +41,7 @@ public sealed record RouteNodeResponse(
         position,
         hub.Id,
         hub.Code.Value,
-        hub.Name,
+        //hub.Name,
         hub.Coordinate.Latitude,
         hub.Coordinate.Longitude);
 }

@@ -19,9 +19,7 @@ public sealed class GetHubByIdQueryHandler : IRequestHandler<GetHubByIdQuery, Re
         Hub? hub = await _hubRepository.GetByIdAsync(request.HubId, cancellationToken);
 
         if (hub is null)
-        {
             return Result.Failure<HubResponse>(HubErrors.NotFound(request.HubId));
-        }
 
         return HubResponse.FromDomain(hub);
     }

@@ -17,26 +17,22 @@ public sealed class RegisterHubCommandHandler : IRequestHandler<RegisterHubComma
     public async Task<Result<Guid>> Handle(RegisterHubCommand request, CancellationToken cancellationToken)
     {
         Result<HubCode> codeResult = HubCode.Create(request.Code);
-        if (codeResult.IsFailure)
-        {
+        if (codeResult.IsFailure) {
             return Result.Failure<Guid>(codeResult.Error);
         }
 
         Result<GeoCoordinate> coordinateResult = GeoCoordinate.Create(request.Latitude, request.Longitude);
-        if (coordinateResult.IsFailure)
-        {
+        if (coordinateResult.IsFailure) {
             return Result.Failure<Guid>(coordinateResult.Error);
         }
 
         bool codeInUse = await _hubRepository.ExistsByCodeAsync(codeResult.Value, cancellationToken);
-        if (codeInUse)
-        {
+        if (codeInUse) {
             return Result.Failure<Guid>(HubErrors.CodeAlreadyInUse);
         }
 
-        Result<Hub> hubResult = Hub.Create(codeResult.Value, request.Name, coordinateResult.Value, DateTime.UtcNow);
-        if (hubResult.IsFailure)
-        {
+        Result<Hub> hubResult = Hub.Create(codeResult.Value, coordinateResult.Value, DateTime.UtcNow);
+        if (hubResult.IsFailure) {
             return Result.Failure<Guid>(hubResult.Error);
         }
 

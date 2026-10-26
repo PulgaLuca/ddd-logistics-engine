@@ -109,9 +109,13 @@ Ogni gruppo deve configurare la propria repository così:
 
 Da quel momento il pulsante di merge resta disabilitato finché la pipeline non è verde: nessuno, può bypassare i controlli.
 
+
 ## 8. Colloquio orale
 
-I think you already know it.
+- Domande sugli argomenti svolti con uno sguardo critico e aperto a nuove applicazioni in altri ambiti;
+- Live Coding: implementazione di una feature nuova o modifica di una feature esistente in modalità live;
+- Lettura di codice implementato o nuovo.
+
 
 ## 9. Riepilogo: checklist minima per gruppo
 

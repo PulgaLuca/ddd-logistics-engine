@@ -10,19 +10,15 @@ namespace Dhexby.LogisticsEngine.Domain.Hubs;
 /// </summary>
 public sealed class Hub : Entity
 {
-    public const int MaxNameLength = 150;
-
     private Hub(
         Guid id,
         HubCode code,
-        string name,
         GeoCoordinate coordinate,
         HubStatus status,
         DateTime createdOnUtc)
         : base(id)
     {
         Code = code;
-        Name = name;
         Coordinate = coordinate;
         Status = status;
         CreatedOnUtc = createdOnUtc;
@@ -30,41 +26,25 @@ public sealed class Hub : Entity
 
     public HubCode Code { get; private set; }
 
-    public string Name { get; private set; }
-
     public GeoCoordinate Coordinate { get; private set; }
 
     public HubStatus Status { get; private set; }
 
     public DateTime CreatedOnUtc { get; private set; }
 
-    /// <summary>Factory: unico punto di creazione. L'hub nasce Active.</summary>
-    public static Result<Hub> Create(HubCode code, string? name, GeoCoordinate coordinate, DateTime utcNow)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return Result.Failure<Hub>(HubErrors.NameRequired);
-        }
-
-        string trimmedName = name.Trim();
-        if (trimmedName.Length > MaxNameLength)
-        {
-            return Result.Failure<Hub>(HubErrors.NameTooLong);
-        }
-
-        var hub = new Hub(Guid.NewGuid(), code, trimmedName, coordinate, HubStatus.Active, utcNow);
+    public static Result<Hub> Create(HubCode code, GeoCoordinate coordinate, DateTime utcNow)
+    {   
+        var hub = new Hub(Guid.NewGuid(), code, coordinate, HubStatus.Active, utcNow);
         hub.RaiseDomainEvent(new HubRegisteredDomainEvent(hub.Id));
 
         return hub;
     }
 
-    /// <summary>Business rule: si disattiva solo un hub attivo.</summary>
+    /// <summary>Si disattiva solo un hub attivo.</summary>
     public Result Deactivate()
     {
         if (Status == HubStatus.Inactive)
-        {
             return Result.Failure(HubErrors.AlreadyInactive);
-        }
 
         Status = HubStatus.Inactive;
         RaiseDomainEvent(new HubDeactivatedDomainEvent(Id));
@@ -76,9 +56,7 @@ public sealed class Hub : Entity
     public Result Activate()
     {
         if (Status == HubStatus.Active)
-        {
             return Result.Failure(HubErrors.AlreadyActive);
-        }
 
         Status = HubStatus.Active;
 
@@ -89,9 +67,8 @@ public sealed class Hub : Entity
     public static Hub Rehydrate(
         Guid id,
         HubCode code,
-        string name,
         GeoCoordinate coordinate,
         HubStatus status,
         DateTime createdOnUtc) =>
-        new(id, code, name, coordinate, status, createdOnUtc);
+        new(id, code, coordinate, status, createdOnUtc);
 }

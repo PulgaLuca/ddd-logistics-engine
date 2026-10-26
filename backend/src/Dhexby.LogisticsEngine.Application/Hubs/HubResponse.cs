@@ -6,7 +6,6 @@ namespace Dhexby.LogisticsEngine.Application.Hubs;
 public sealed record HubResponse(
     Guid Id,
     string Code,
-    string Name,
     double Latitude,
     double Longitude,
     string Status,
@@ -15,7 +14,6 @@ public sealed record HubResponse(
     public static HubResponse FromDomain(Hub hub) => new(
         hub.Id,
         hub.Code.Value,
-        hub.Name,
         hub.Coordinate.Latitude,
         hub.Coordinate.Longitude,
         hub.Status.ToString(),

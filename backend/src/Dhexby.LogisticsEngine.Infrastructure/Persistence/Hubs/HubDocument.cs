@@ -6,7 +6,6 @@ namespace Dhexby.LogisticsEngine.Infrastructure.Persistence;
 internal sealed record HubDocument(
     Guid Id,
     string Code,
-    string Name,
     double Latitude,
     double Longitude,
     HubStatus Status,
@@ -15,7 +14,6 @@ internal sealed record HubDocument(
     public static HubDocument FromDomain(Hub hub) => new(
         hub.Id,
         hub.Code.Value,
-        hub.Name,
         hub.Coordinate.Latitude,
         hub.Coordinate.Longitude,
         hub.Status,
@@ -24,7 +22,6 @@ internal sealed record HubDocument(
     public Hub ToDomain() => Hub.Rehydrate(
         Id,
         HubCode.Create(Code).Value,
-        Name,
         GeoCoordinate.Create(Latitude, Longitude).Value,
         Status,
         CreatedOnUtc);

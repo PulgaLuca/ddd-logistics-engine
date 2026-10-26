@@ -28,7 +28,7 @@ public sealed class GetRoadNetworkQueryHandler : IRequestHandler<GetRoadNetworkQ
             .Select(hub => new RoadNetworkNodeResponse(
                 hub.Id,
                 hub.Code.Value,
-                hub.Name,
+                //hub.Name,
                 hub.Coordinate.Latitude,
                 hub.Coordinate.Longitude))
             .ToArray();

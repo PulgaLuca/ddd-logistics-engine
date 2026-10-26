@@ -8,7 +8,7 @@ public class HubTests
 {
     private static Hub CreateHub() => Hub.Create(
         HubCode.Create("HUB-0001").Value,
-        "Milano Central Hub",
+        //"Milano Central Hub",
         GeoCoordinate.Create(45.4642, 9.1900).Value,
         DateTime.UtcNow).Value;
 
@@ -21,20 +21,20 @@ public class HubTests
         Assert.Contains(hub.DomainEvents, domainEvent => domainEvent is HubRegisteredDomainEvent);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("   ")]
-    public void Create_ShouldFail_WhenNameMissing(string? name)
-    {
-        Result<Hub> result = Hub.Create(
-            HubCode.Create("HUB-0001").Value,
-            name,
-            GeoCoordinate.Create(0, 0).Value,
-            DateTime.UtcNow);
+    //[Theory]
+    //[InlineData(null)]
+    //[InlineData("   ")]
+    //public void Create_ShouldFail_WhenNameMissing(string? name)
+    //{
+    //    Result<Hub> result = Hub.Create(
+    //        HubCode.Create("HUB-0001").Value,
+    //        name,
+    //        GeoCoordinate.Create(0, 0).Value,
+    //        DateTime.UtcNow);
 
-        Assert.True(result.IsFailure);
-        Assert.Equal(HubErrors.NameRequired, result.Error);
-    }
+    //    Assert.True(result.IsFailure);
+    //    Assert.Equal(HubErrors.NameRequired, result.Error);
+    //}
 
     [Fact]
     public void Deactivate_ShouldSucceed_WhenActive_ThenFailIfRepeated()

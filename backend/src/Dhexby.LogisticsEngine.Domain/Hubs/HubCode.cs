@@ -6,7 +6,7 @@ namespace Dhexby.LogisticsEngine.Domain.Hubs;
 /// Value Object: codice identificativo dell'hub. Formato HUB-XXXX
 /// (4 caratteri alfanumerici maiuscoli).
 /// </summary>
-public sealed partial class HubCode : ValueObject
+public sealed class HubCode : ValueObject
 {
     private HubCode(string value)
     {
@@ -18,9 +18,7 @@ public sealed partial class HubCode : ValueObject
     public static Result<HubCode> Create(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
-        {
             return Result.Failure<HubCode>(HubErrors.CodeEmpty);
-        }
 
         string normalized = value.Trim().ToUpperInvariant();
 

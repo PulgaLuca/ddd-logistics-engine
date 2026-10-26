@@ -1,4 +1,3 @@
-using Dhexby.LogisticsEngine.Domain.Hubs;
 using FluentValidation;
 
 namespace Dhexby.LogisticsEngine.Application.Hubs.RegisterHub;
@@ -13,9 +12,9 @@ public sealed class RegisterHubCommandValidator : AbstractValidator<RegisterHubC
             .Matches("^HUB-[A-Za-z0-9]{4}$")
             .WithMessage("The hub code must match the format HUB-XXXX (4 letters or digits).");
 
-        RuleFor(command => command.Name)
-            .NotEmpty().WithMessage("The hub name is required.")
-            .MaximumLength(Hub.MaxNameLength);
+        //RuleFor(command => command.Name)
+        //    .NotEmpty().WithMessage("The hub name is required.")
+        //    .MaximumLength(Hub.MaxNameLength);
 
         RuleFor(command => command.Latitude)
             .InclusiveBetween(-90, 90).WithMessage("The latitude must be between -90 and 90 degrees.");

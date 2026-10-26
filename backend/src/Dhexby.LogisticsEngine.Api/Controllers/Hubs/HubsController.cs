@@ -1,8 +1,8 @@
 using Dhexby.LogisticsEngine.Api.Authorization;
+using Dhexby.LogisticsEngine.Api.Controllers.Hubs;
 using Dhexby.LogisticsEngine.Api.Extensions;
 using Dhexby.LogisticsEngine.Application.Hubs;
 using Dhexby.LogisticsEngine.Application.Hubs.GetHubById;
-using Dhexby.LogisticsEngine.Application.Hubs.RegisterHub;
 using Dhexby.SharedKernel;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,9 +16,9 @@ namespace Dhexby.LogisticsEngine.Api.Controllers;
 [Authorize]
 public sealed class HubsController : ControllerBase
 {
-    private readonly ISender _sender;
+    private readonly IMediator _sender;
 
-    public HubsController(ISender sender)
+    public HubsController(IMediator sender)
     {
         _sender = sender;
     }
@@ -46,10 +46,4 @@ public sealed class HubsController : ControllerBase
 
         return result.IsSuccess ? Ok(result.Value) : result.ToProblemResult();
     }
-}
-
-/// <summary>Contratto HTTP di registrazione hub.</summary>
-public sealed record RegisterHubRequest(string Code, string Name, double Latitude, double Longitude)
-{
-    public RegisterHubCommand ToCommand() => new(Code, Name, Latitude, Longitude);
 }

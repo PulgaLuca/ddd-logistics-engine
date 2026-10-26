@@ -21,9 +21,9 @@ public static class HubErrors
         "Hub.Name.Required",
         "The hub name is required.");
 
-    public static readonly Error NameTooLong = Error.Failure(
-        "Hub.Name.TooLong",
-        $"The hub name cannot exceed {Hub.MaxNameLength} characters.");
+    //public static readonly Error NameTooLong = Error.Failure(
+    //    "Hub.Name.TooLong",
+    //    $"The hub name cannot exceed {Hub.MaxNameLength} characters.");
 
     public static readonly Error LatitudeOutOfRange = Error.Failure(
         "Hub.Latitude.OutOfRange",

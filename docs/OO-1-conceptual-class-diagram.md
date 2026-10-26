@@ -1,4 +1,4 @@
-# OO — 1. Conceptual Class Diagram (modello concettuale)
+# OO - 1. Conceptual Class Diagram (modello concettuale)
 
 Fase di **analisi orientata agli oggetti (OOA)**: qui si descrive *il dominio*, non il software.
 Le classi sono **concetti del mondo logistico** (spedizione, ordine, hub, zona, strada, utente)
@@ -7,10 +7,7 @@ con le loro **proprietà** (cosa sanno) e i loro **comportamenti** (cosa sanno f
 > Nota di metodo: in un modello concettuale puro non si parla di `Guid`, DTO, repository o
 > database. Qui i tipi tecnici sono citati solo quando coincidono con un concetto del dominio
 > (es. *tracking number*), per mantenere la tracciabilità verso il codice reale
-> (→ [OO-4 — physical mapping](OO-4-ood-oop-physical-mapping.md)).
-
-Documenti correlati: [ARCHITECTURE.md](ARCHITECTURE.md) · [OO-2 use cases](OO-2-use-cases.md) ·
-[OO-3 OOD relationships](OO-3-ood-relationships.md).
+> (→ [OO-4 - physical mapping](OO-4-ood-oop-physical-mapping.md)).
 
 ---
 
@@ -122,7 +119,7 @@ Le relazioni sono commentate una per una nel §4.
 
 ## 3. Concetti in dettaglio: proprietà e comportamenti
 
-### 3.1 Shipment — la spedizione
+### 3.1 Shipment - la spedizione
 
 ```mermaid
 classDiagram
@@ -168,7 +165,7 @@ classDiagram
 - il prezzo **non è un dato in ingresso**: è *calcolato* dalla regola di pricing
   (base + tariffa al kg, +50 % se express).
 
-**Ciclo di vita** — è il cuore del comportamento: i metodi non sono setter, sono
+**Ciclo di vita** - è il cuore del comportamento: i metodi non sono setter, sono
 **transizioni di stato che possono rifiutare la richiesta**.
 
 ```mermaid
@@ -179,7 +176,7 @@ stateDiagram-v2
   Pending --> Cancelled : Cancel
 ```
 
-### 3.2 Order — l'ordine
+### 3.2 Order - l'ordine
 
 ```mermaid
 classDiagram
@@ -228,7 +225,7 @@ stateDiagram-v2
   Assigned --> Cancelled : Cancel
 ```
 
-### 3.3 Hub, Road — la rete
+### 3.3 Hub, Road - la rete
 
 ```mermaid
 classDiagram
@@ -262,7 +259,7 @@ classDiagram
   tratto rispetto alla sua lunghezza pura.
 - Hub + Road formano un **grafo pesato**: gli hub sono i vertici, le strade gli archi.
 
-### 3.4 Zone e Street — la gerarchia territoriale
+### 3.4 Zone e Street - la gerarchia territoriale
 
 ```mermaid
 classDiagram
@@ -287,7 +284,7 @@ Una zona può avere **una** zona padre (o nessuna, ed è una radice) e **molte**
 e non può comparire due volte nella stessa zona (l'uguaglianza è per *valore*: stesso nome +
 stesso CAP = stessa via).
 
-### 3.5 User — l'accesso
+### 3.5 User - l'accesso
 
 ```mermaid
 classDiagram
@@ -333,7 +330,7 @@ possiede. Sono quindi in composizione, e concettualmente sono **Value Object**: 
 il *valore*, non per l'identità; due indirizzi con gli stessi campi sono **lo stesso**
 indirizzo. Questa scelta ha tre conseguenze pratiche:
 
-1. sono **immutabili** — si sostituiscono, non si modificano;
+1. sono **immutabili** - si sostituiscono, non si modificano;
 2. sono il posto naturale dove mettere le **regole di validazione** (peso ≤ 1000 kg, valuta
    a 3 lettere, formato del tracking number): l'oggetto non può nemmeno *esistere* invalido;
 3. eliminano la *primitive obsession*: un `Weight` non può essere confuso con un `Money`,
@@ -355,13 +352,13 @@ cosa farne.
 
 Le cardinalità non sono decorazione:
 
-- `Order "0..*" --> "0..1" Hub` — un ordine può **non essere ancora assegnato**: è
+- `Order "0..*" --> "0..1" Hub` - un ordine può **non essere ancora assegnato**: è
   esattamente la differenza tra lo stato `Pending` e `Assigned`;
-- `Road --> "2" Hub` — una strada senza due estremi distinti non ha senso (regola
+- `Road --> "2" Hub` - una strada senza due estremi distinti non ha senso (regola
   "from ≠ to");
-- `Zone "0..1" o-- "0..*" Zone` — un solo padre: è ciò che rende la struttura un **albero**
+- `Zone "0..1" o-- "0..*" Zone` - un solo padre: è ciò che rende la struttura un **albero**
   e non un grafo generico, e quindi ciò che garantisce che la visita gerarchica termini;
-- `Shipment *-- "2" Address` — due indirizzi, che la regola di dominio impone **diversi**.
+- `Shipment *-- "2" Address` - due indirizzi, che la regola di dominio impone **diversi**.
 
 ### 4.4 Relazioni "derivate": le strutture algoritmiche
 
@@ -388,7 +385,7 @@ Il diagramma elenca per ogni concetto sia proprietà sia **operazioni**, e quest
 
 - **niente setter pubblici**: lo stato cambia solo attraverso operazioni che hanno un nome del
   dominio (`Dispatch`, `Unassign`, `AddStreet`) e che possono **rifiutare** l'operazione;
-- **creazione controllata**: ogni concetto nasce da una `Create` che verifica le invarianti —
+- **creazione controllata**: ogni concetto nasce da una `Create` che verifica le invarianti -
   non esiste una spedizione "a metà";
 - **esito esplicito, non eccezioni**: la violazione di una regola di business è un risultato
   *previsto* (`Result`), non un guasto;

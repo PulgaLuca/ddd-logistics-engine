@@ -2,6 +2,7 @@
   <Folder Name="/backend/" />
   <Folder Name="/backend/src/">
     <Project Path="backend/src/Dhexby.LogisticsEngine.Api/Dhexby.LogisticsEngine.Api.csproj" Id="03cca036-713d-439c-b761-5339efe446f3" />
+    <Project Path="backend/src/Dhexby.LogisticsEngine.Console/Dhexby.LogisticsEngine.Console.csproj" Id="7ad989c9-43cc-4abc-8e8d-4482fbb343d0" />
     <Project Path="backend/src/Dhexby.LogisticsEngine.Application/Dhexby.LogisticsEngine.Application.csproj" Id="03fd6c74-36ae-439f-933d-266f547aadf1" />
     <Project Path="backend/src/Dhexby.LogisticsEngine.Domain/Dhexby.LogisticsEngine.Domain.csproj" Id="9d308cff-1ebe-420b-bfe9-f9feadccea0c" />
     <Project Path="backend/src/Dhexby.LogisticsEngine.Infrastructure/Dhexby.LogisticsEngine.Infrastructure.csproj" Id="4c7f5d53-f212-410f-9295-04f5a9d16206" />
