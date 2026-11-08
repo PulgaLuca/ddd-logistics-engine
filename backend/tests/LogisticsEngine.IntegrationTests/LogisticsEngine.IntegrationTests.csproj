@@ -1,6 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="../../src/LogisticsEngine.WebApi/LogisticsEngine.WebApi.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-  </ItemGroup>
-</Project>

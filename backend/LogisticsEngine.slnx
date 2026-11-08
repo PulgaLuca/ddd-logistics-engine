@@ -4,12 +4,10 @@
     <Project Path="src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
     <Project Path="src/LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
     <Project Path="src/LogisticsEngine.Infrastructure/LogisticsEngine.Infrastructure.csproj" />
-    <Project Path="src/LogisticsEngine.WebApi/LogisticsEngine.WebApi.csproj" />
+    <Project Path="src/LogisticsEngine.Console/LogisticsEngine.Console.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LogisticsEngine.UnitTests/LogisticsEngine.UnitTests.csproj" />
-    <Project Path="tests/LogisticsEngine.ArchitectureTests/LogisticsEngine.ArchitectureTests.csproj" />
-    <Project Path="tests/LogisticsEngine.IntegrationTests/LogisticsEngine.IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/build/">
     <File Path="Directory.Build.props" />

@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-  <ItemGroup>
-    <ProjectReference Include="../LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
-    <ProjectReference Include="../LogisticsEngine.Infrastructure/LogisticsEngine.Infrastructure.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.OpenApi" />
-  </ItemGroup>
-</Project>

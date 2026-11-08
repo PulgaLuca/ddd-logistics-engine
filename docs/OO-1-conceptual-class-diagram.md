@@ -287,7 +287,7 @@ Una zona può avere **una** zona padre (o nessuna, ed è una radice) e **molte**
 e non può comparire due volte nella stessa zona (l'uguaglianza è per *valore*: stesso nome +
 stesso CAP = stessa via).
 
-### 3.5 User — l'accesso
+### 3.5 User - l'accesso
 
 ```mermaid
 classDiagram
