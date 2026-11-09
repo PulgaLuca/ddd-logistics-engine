@@ -36,6 +36,13 @@ public sealed class MongoUserRepository(IMongoDatabase database) : IUserReposito
         _users.InsertOne(ToDocument(user));
     }
 
+    public void Update(User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ReplaceOneResult result = _users.ReplaceOne(document => document.Id == user.Id, ToDocument(user));
+        if (result.MatchedCount == 0) throw new InvalidOperationException("User does not exist.");
+    }
+
     private void EnsureUniqueUserNameIndex()
     {
         if (_userNameIndexCreated)
@@ -67,7 +74,8 @@ public sealed class MongoUserRepository(IMongoDatabase database) : IUserReposito
             throw new InvalidDataException($"Invalid user role for '{document.Id}'.");
         }
 
-        var result = User.Create(document.Id, document.UserName, document.PasswordHash, role);
+        var result = User.Create(document.Id, document.UserName, document.PasswordHash, role,
+            document.FirstName, document.LastName, document.ProfessionalRole);
         return result.IsSuccess
             ? result.Value
             : throw new InvalidDataException($"Invalid user document '{document.Id}': {result.Error.Code}");
@@ -78,7 +86,10 @@ public sealed class MongoUserRepository(IMongoDatabase database) : IUserReposito
         Id = user.Id,
         UserName = user.UserName.Value,
         PasswordHash = user.PasswordHash.Value,
-        Role = user.Role.ToString()
+        Role = user.Role.ToString(),
+        FirstName = user.FirstName,
+        LastName = user.LastName,
+        ProfessionalRole = user.ProfessionalRole
     };
 
     public sealed class UserDocument
@@ -90,5 +101,8 @@ public sealed class MongoUserRepository(IMongoDatabase database) : IUserReposito
         [BsonElement("userName")] public string UserName { get; set; } = string.Empty;
         [BsonElement("passwordHash")] public string PasswordHash { get; set; } = string.Empty;
         [BsonElement("role")] public string Role { get; set; } = string.Empty;
+        [BsonElement("firstName")] public string FirstName { get; set; } = string.Empty;
+        [BsonElement("lastName")] public string LastName { get; set; } = string.Empty;
+        [BsonElement("professionalRole")] public string ProfessionalRole { get; set; } = string.Empty;
     }
 }

@@ -12,6 +12,7 @@ services:
       STORAGE_PROVIDER: ${STORAGE_PROVIDER:-MongoDb}
       MONGODB_DATABASE: ${MONGODB_DATABASE:-logisticsengine}
       Authentication__SigningKey: ${AUTHENTICATION_SIGNING_KEY:-local-development-signing-key-change-before-production}
+      Authentication__Google__ClientId: ${GOOGLE_CLIENT_ID:-}
       Storage__DataDirectory: /app/data
     ports:
       - "${API_PORT:-5003}:8080"
@@ -25,6 +26,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: /api/v1
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     ports:
       - "${FRONTEND_PORT:-8080}:80"
     depends_on:

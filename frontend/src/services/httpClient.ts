@@ -4,6 +4,10 @@ const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'https://localhost:7259
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
   headers.set('Accept', 'application/json')
+  const sessionValue = localStorage.getItem('logisticsengine.auth')
+  if (sessionValue) {
+    try { headers.set('Authorization', `Bearer ${(JSON.parse(sessionValue) as { accessToken: string }).accessToken}`) } catch { localStorage.removeItem('logisticsengine.auth') }
+  }
   if (init.body) headers.set('Content-Type', 'application/json')
 
   let response: Response

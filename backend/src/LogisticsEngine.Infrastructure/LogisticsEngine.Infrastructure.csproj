@@ -3,5 +3,6 @@
     <ProjectReference Include="../LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="Google.Apis.Auth" />
   </ItemGroup>
 </Project>

@@ -18,7 +18,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         string dataDirectory,
         string? tokenSigningKey = null,
-        MongoDbOptions? mongoDbOptions = null)
+        MongoDbOptions? mongoDbOptions = null,
+        string? googleClientId = null)
     {
         if (mongoDbOptions is null)
         {
@@ -47,6 +48,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IUserAuthenticationService, JsonUserAuthenticationService>();
+        services.AddSingleton<IGoogleAuthenticationService>(provider => new GoogleAuthenticationService(
+            provider.GetRequiredService<IUserRepository>(), provider.GetRequiredService<IPasswordHasher>(), googleClientId ?? string.Empty));
         services.AddSingleton<IUserAuthorizationService, DomainUserAuthorizationService>();
         string signingKey = tokenSigningKey ?? Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
         var accessTokenService = new HmacUserAccessTokenService(signingKey);

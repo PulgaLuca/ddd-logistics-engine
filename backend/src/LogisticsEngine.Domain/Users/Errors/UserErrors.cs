@@ -13,4 +13,5 @@ public static class UserErrors
     public static readonly Error UserNotFound = new("User.NotFound", "L'utente richiesto non esiste.", ErrorType.NotFound);
     public static readonly Error PermissionDenied = new("User.PermissionDenied", "L'utente non possiede il permesso richiesto.", ErrorType.Forbidden);
     public static readonly Error InvalidPassword = new("User.InvalidPassword", "La password deve contenere almeno 12 caratteri.", ErrorType.Validation);
+    public static readonly Error InvalidProfile = new("User.InvalidProfile", "Nome e cognome sono obbligatori e i campi non possono superare 80 caratteri.", ErrorType.Validation);
 }

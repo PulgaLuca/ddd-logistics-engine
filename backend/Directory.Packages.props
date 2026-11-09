@@ -23,5 +23,6 @@
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="MongoDB.Driver" Version="3.13.0" />
+    <PackageVersion Include="Google.Apis.Auth" Version="1.73.0" />
   </ItemGroup>
 </Project>

@@ -88,7 +88,7 @@ public partial class Program
 
         MongoDbOptions? mongoDbOptions = useMongoDb ? MongoDbOptions.FromEnvironment() : null;
 
-        builder.Services.AddInfrastructure(dataDirectory, signingKey, mongoDbOptions);
+        builder.Services.AddInfrastructure(dataDirectory, signingKey, mongoDbOptions, builder.Configuration["Authentication:Google:ClientId"]);
 
         WebApplication app = builder.Build();
 

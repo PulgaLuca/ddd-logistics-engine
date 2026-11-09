@@ -9,4 +9,5 @@ public interface IUserRepository
     User? GetById(Guid id);
     User? GetByUserName(UserName userName);
     void Add(User user);
+    void Update(User user);
 }
