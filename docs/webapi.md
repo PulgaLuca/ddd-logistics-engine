@@ -106,6 +106,53 @@ Content-Type: application/json
 
 Gli enum sono serializzati come stringhe. Per lo stato sono disponibili `Created`, `InTransit`, `Delivered` e `Cancelled`; le transizioni consentite sono verificate dall'entità Shipment.
 
+## Registrazione, autenticazione e autorizzazione
+
+Gli endpoint utente v1 usano lo storage JSON `backend/data/users.json` e sono disponibili quando l'API è avviata in `Development`:
+
+| Metodo | Percorso | Accesso | Funzione |
+|---|---|---|---|
+| `POST` | `/api/v1/users/register` | Pubblico | Registra un account con ruolo iniziale `Viewer` |
+| `POST` | `/api/v1/users/authenticate` | Pubblico | Verifica nome utente/password e restituisce un bearer token valido per un'ora |
+| `GET` | `/api/v1/users/me/permissions/{permission}` | Bearer | Controlla un permesso dell'utente autenticato |
+
+Registrazione (password di almeno 12 caratteri):
+
+```http
+POST http://localhost:5003/api/v1/users/register
+Content-Type: application/json
+
+{
+  "userName": "student.user",
+  "password": "Correct-Horse-Battery-42"
+}
+```
+
+Login:
+
+```http
+POST http://localhost:5003/api/v1/users/authenticate
+Content-Type: application/json
+
+{
+  "userName": "student.user",
+  "password": "Correct-Horse-Battery-42"
+}
+```
+
+La risposta include `accessToken`, `tokenType`, `expiresAtUtc` e i dati pubblici dell'utente. In Swagger UI premi **Authorize** e inserisci il token. Con curl, usa il valore restituito come header:
+
+```sh
+curl http://localhost:5003/api/v1/users/me/permissions/ReadLogistics \
+  -H "Authorization: Bearer <accessToken>"
+```
+
+Un account nuovo ha il ruolo `Viewer`: `ReadLogistics` restituisce `200`, mentre `ManageHubs` restituisce `403`. Senza token o con token non valido l'endpoint protetto restituisce `401`. La route non accetta l'ID utente dal client: l'identità viene ricavata dal token firmato e il permesso è controllato nuovamente sul repository JSON.
+
+Questa prima integrazione protegge la verifica dei permessi utente; gli endpoint Hub e Shipment esistenti non sono ancora vincolati a questi ruoli e restano pubblici. L'applicazione delle policy a tali controller è un passo successivo.
+
+La chiave HMAC per i token è configurata in `appsettings.Development.json` solo come valore dimostrativo. Per altri ambienti impostare `Authentication:SigningKey` tramite configurazione protetta/variabile d'ambiente, con almeno 32 byte; non riutilizzare la chiave di sviluppo.
+
 ## Convenzioni e buone pratiche
 
 Queste convenzioni sono applicate agli endpoint v1:

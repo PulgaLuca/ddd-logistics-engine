@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
@@ -23,7 +24,8 @@ public sealed class ApiWorkflowTests : IDisposable
             builder.ConfigureAppConfiguration((_, configuration) =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Storage:DataDirectory"] = _dataDirectory
+                    ["Storage:DataDirectory"] = _dataDirectory,
+                    ["Authentication:SigningKey"] = "Integration-Test-Signing-Key-At-Least-32-Bytes-Long-For-Hmac"
                 }));
         });
 
@@ -79,6 +81,43 @@ public sealed class ApiWorkflowTests : IDisposable
         using JsonDocument shipments = JsonDocument.Parse(await list.Content.ReadAsStringAsync(cancellationToken));
         shipments.RootElement.GetArrayLength().ShouldBe(1);
         shipments.RootElement[0].GetProperty("trackingNumber").GetString().ShouldBe("ABCD1234");
+    }
+
+    [Fact]
+    public async Task User_can_register_authenticate_and_check_permissions_with_bearer_token()
+    {
+        CancellationToken cancellationToken = TestContext.Current.CancellationToken;
+
+        // 1. Registrazione crea un Viewer e non restituisce mai hash o password.
+        using HttpResponseMessage registration = await _client.PostAsJsonAsync(
+            "/api/v1/users/register",
+            new { userName = "student.user", password = "Correct-Horse-Battery-42" },
+            cancellationToken);
+        registration.StatusCode.ShouldBe(HttpStatusCode.Created);
+        string registrationBody = await registration.Content.ReadAsStringAsync(cancellationToken);
+        registrationBody.ShouldNotContain("passwordHash");
+        registrationBody.ShouldNotContain("Correct-Horse-Battery-42");
+
+        // 2. Il login rilegge users.json e verifica la password con il PBKDF2 hasher.
+        using HttpResponseMessage login = await _client.PostAsJsonAsync(
+            "/api/v1/users/authenticate",
+            new { userName = "STUDENT.USER", password = "Correct-Horse-Battery-42" },
+            cancellationToken);
+        login.StatusCode.ShouldBe(HttpStatusCode.OK);
+        using JsonDocument loginBody = JsonDocument.Parse(await login.Content.ReadAsStringAsync(cancellationToken));
+        string token = loginBody.RootElement.GetProperty("accessToken").GetString()!;
+        token.ShouldNotBeNullOrWhiteSpace();
+
+        // 3. La richiesta protetta deriva l'identità dal token firmato, non da un ID scelto dal client.
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        using HttpResponseMessage readPermission = await _client.GetAsync(
+            "/api/v1/users/me/permissions/ReadLogistics", cancellationToken);
+        readPermission.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        // 4. Il medesimo Viewer non può gestire gli Hub: il Domain nega il permesso con HTTP 403.
+        using HttpResponseMessage managePermission = await _client.GetAsync(
+            "/api/v1/users/me/permissions/ManageHubs", cancellationToken);
+        managePermission.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     public void Dispose()

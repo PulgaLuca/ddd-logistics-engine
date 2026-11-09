@@ -56,3 +56,29 @@ Content-Type: application/json
 ### List shipments
 GET {{LogisticsEngine.Api_HostAddress}}/api/v1/shipments
 Accept: application/json
+
+### Register a Viewer account
+POST {{LogisticsEngine.Api_HostAddress}}/api/v1/users/register
+Content-Type: application/json
+
+{
+  "userName": "student.user",
+  "password": "Correct-Horse-Battery-42"
+}
+
+### Authenticate and copy accessToken from the response
+POST {{LogisticsEngine.Api_HostAddress}}/api/v1/users/authenticate
+Content-Type: application/json
+
+{
+  "userName": "student.user",
+  "password": "Correct-Horse-Battery-42"
+}
+
+### Set the token returned by authenticate before sending the protected request
+@accessToken = paste-token-here
+
+### Check a permission for the authenticated user
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/users/me/permissions/ReadLogistics
+Authorization: Bearer {{accessToken}}
+Accept: application/json

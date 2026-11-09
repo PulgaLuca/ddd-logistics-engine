@@ -1,4 +1,5 @@
 using LogisticsEngine.Application;
+using LogisticsEngine.Api.Authentication;
 using LogisticsEngine.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,7 @@ using System.Text.Json.Serialization;
 /// <summary>Avvia la Web API e compone i layer tramite dependency injection.</summary>
 public partial class Program
 {
-    private const string DevelopmentCorsPolicy = "DevelopmentBrowserClients";
+    private const string _developmentCorsPolicy = "DevelopmentBrowserClients";
 
     public static void Main(string[] args)
     {
@@ -25,9 +26,12 @@ public partial class Program
         // I controller HTTP sono adapter sottili; i casi d'uso vengono inviati con ISender a MediatR.
         builder.Services.AddControllers().AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+        builder.Services.AddAuthentication(BearerTokenAuthenticationDefaults.Scheme)
+            .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
+                BearerTokenAuthenticationHandler>(BearerTokenAuthenticationDefaults.Scheme, _ => { });
         builder.Services.AddAuthorization();
         builder.Services.AddHealthChecks();
-        builder.Services.AddCors(options => options.AddPolicy(DevelopmentCorsPolicy, policy =>
+        builder.Services.AddCors(options => options.AddPolicy(_developmentCorsPolicy, policy =>
             policy.WithOrigins("http://localhost:5003", "https://localhost:7259")
                 .AllowAnyHeader()
                 .AllowAnyMethod()));
@@ -39,6 +43,14 @@ public partial class Program
                 Version = "v1",
                 Description = "API version v1 for hubs, shipments and domain algorithms."
             });
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Inserisci il token restituito da POST /api/v1/users/authenticate."
+            });
+            options.OperationFilter<BearerSecurityRequirementsOperationFilter>();
 
             // Include endpoint summaries and response documentation in the generated OpenAPI document.
             string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -55,7 +67,9 @@ public partial class Program
         // Infrastructure collega i repository concreti JSON alle interfacce del Domain.
         string dataDirectory = builder.Configuration["Storage:DataDirectory"]
             ?? ResolveDataDirectory(builder.Environment.ContentRootPath);
-        builder.Services.AddInfrastructure(dataDirectory);
+        string signingKey = builder.Configuration["Authentication:SigningKey"]
+            ?? throw new InvalidOperationException("Configure Authentication:SigningKey with at least 32 bytes.");
+        builder.Services.AddInfrastructure(dataDirectory, signingKey);
 
         WebApplication app = builder.Build();
 
@@ -74,10 +88,11 @@ public partial class Program
         app.UseRouting();
         if (app.Environment.IsDevelopment())
         {
-            app.UseCors(DevelopmentCorsPolicy);
+            app.UseCors(_developmentCorsPolicy);
         }
 
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
         app.MapHealthChecks("/health");

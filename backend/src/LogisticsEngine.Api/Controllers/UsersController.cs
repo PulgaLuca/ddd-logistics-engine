@@ -1,0 +1,83 @@
+using System.Security.Claims;
+using LogisticsEngine.Api.Authentication;
+using LogisticsEngine.Api.Contracts;
+using LogisticsEngine.Application.Users;
+using LogisticsEngine.Application.Users.AuthenticateUser;
+using LogisticsEngine.Application.Users.AuthorizeUser;
+using LogisticsEngine.Application.Users.RegisterUser;
+using LogisticsEngine.Domain.Users.Enums;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LogisticsEngine.Api.Controllers;
+
+/// <summary>Espone registrazione, login e controllo dei permessi dell'utente autenticato.</summary>
+[Route(ApiRouteConstants.VersionOnePrefix + "/users")]
+public sealed class UsersController(
+    ISender sender,
+    IUserAccessTokenService accessTokenService) : ApiControllerBase
+{
+    /// <summary>Crea un account Viewer; il caso d'uso non accetta ruoli dal client.</summary>
+    [AllowAnonymous]
+    [HttpPost("register")]
+    [ProducesResponseType<UserDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Register(
+        [FromBody] RegisterUserRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new RegisterUserCommand(request.UserName, request.Password), cancellationToken);
+
+        return result.IsSuccess
+            ? StatusCode(StatusCodes.Status201Created, result.Value)
+            : ToProblem(result.Error);
+    }
+
+    /// <summary>Verifica le credenziali e restituisce un token bearer a scadenza.</summary>
+    [AllowAnonymous]
+    [HttpPost("authenticate")]
+    [ProducesResponseType<AuthenticateUserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Authenticate(
+        [FromBody] AuthenticateUserRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new AuthenticateUserCommand(request.UserName, request.Password), cancellationToken);
+        if (result.IsFailure)
+        {
+            return ToProblem(result.Error);
+        }
+
+        UserAccessToken token = accessTokenService.Create(result.Value);
+        return Ok(new AuthenticateUserResponse(token.Value, "Bearer", token.ExpiresAtUtc, result.Value));
+    }
+
+    /// <summary>Controlla il permesso dell'utente identificato dal token, mai da un ID fornito dal client.</summary>
+    [Authorize(AuthenticationSchemes = BearerTokenAuthenticationDefaults.Scheme)]
+    [HttpGet("me/permissions/{permission}")]
+    [ProducesResponseType<PermissionCheckResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> CheckPermission(
+        UserPermission permission,
+        CancellationToken cancellationToken)
+    {
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await sender.Send(new AuthorizeUserQuery(userId, permission), cancellationToken);
+        return result.IsSuccess
+            ? Ok(new PermissionCheckResponse(permission, result.Value))
+            : ToProblem(result.Error);
+    }
+}
+
+/// <summary>Esito del controllo del permesso richiesto.</summary>
+public sealed record PermissionCheckResponse(UserPermission Permission, bool Allowed);

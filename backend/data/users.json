@@ -1,0 +1,8 @@
+[
+  {
+    "Id": "021d044b-4f3b-44e9-8e16-e8f6f58afe3f",
+    "UserName": "luca",
+    "PasswordHash": "pbkdf2-sha256$600000$sk3dNyO4OLjfwxQ74tr3xg==$Vpgt4MYGUFuO2Um6TVxjMkCGjQpnvt4iMmjHzhdBOB8=",
+    "Role": "Viewer"
+  }
+]

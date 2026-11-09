@@ -4,6 +4,7 @@ using LogisticsEngine.Application.Hubs.GetBy;
 using LogisticsEngine.Application.Hubs.GetById;
 using LogisticsEngine.Application.Hubs.RegisterHub;
 using LogisticsEngine.Application.Hubs.UpdateHub;
+using LogisticsEngine.Application.Users.RegisterUser;
 using LogisticsEngine.Domain.Hubs.Entities;
 using LogisticsEngine.Domain.Hubs.Services;
 using LogisticsEngine.Domain.Shared.Sorting;
@@ -18,13 +19,17 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddMediatR(configuration =>
-            configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+        {
+            configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
 
         services.AddTransient<IValidator<RegisterHubCommand>, RegisterHubCommandValidator>();
         services.AddTransient<IValidator<UpdateHubCommand>, UpdateHubCommandValidator>();
         services.AddTransient<IValidator<DeleteHubCommand>, DeleteHubCommandValidator>();
         services.AddTransient<IValidator<GetHubByIdQuery>, GetByIdCommandValidator>();
         services.AddTransient<IValidator<GetHubByNameQuery>, GetByNameCommandValidator>();
+        services.AddTransient<IValidator<RegisterUserCommand>, RegisterUserCommandValidator>();
 
         services.AddSingleton<IHubDomainService, HubDomainService>();
         services.AddSingleton<ISorter<Hub>, Sorter<Hub>>();
