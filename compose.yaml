@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - path: backend/.env
+        required: false
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-MongoDb}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-logisticsengine}
+      Authentication__SigningKey: ${AUTHENTICATION_SIGNING_KEY:-local-development-signing-key-change-before-production}
+      Storage__DataDirectory: /app/data
+    ports:
+      - "${API_PORT:-5003}:8080"
+    volumes:
+      - logistics-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  # Survives container replacement; used by the JSON repositories when STORAGE_PROVIDER=Json.
+  logistics-data:
