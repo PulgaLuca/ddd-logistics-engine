@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 
 /// <summary>Avvia la Web API e compone i layer tramite dependency injection.</summary>
-public class Program
+public partial class Program
 {
     private const string DevelopmentCorsPolicy = "DevelopmentBrowserClients";
 
@@ -53,7 +53,8 @@ public class Program
         builder.Services.AddApplication();
 
         // Infrastructure collega i repository concreti JSON alle interfacce del Domain.
-        string dataDirectory = ResolveDataDirectory(builder.Environment.ContentRootPath);
+        string dataDirectory = builder.Configuration["Storage:DataDirectory"]
+            ?? ResolveDataDirectory(builder.Environment.ContentRootPath);
         builder.Services.AddInfrastructure(dataDirectory);
 
         WebApplication app = builder.Build();

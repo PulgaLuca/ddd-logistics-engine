@@ -8,5 +8,10 @@
     "Id": "2b129908-191e-41eb-b282-95c93533a9f8",
     "Name": "Milano",
     "Zone": "NORD"
+  },
+  {
+    "Id": "30fc16ea-4026-4ace-b61a-0ffba9866732",
+    "Name": "string",
+    "Zone": "STRING"
   }
 ]

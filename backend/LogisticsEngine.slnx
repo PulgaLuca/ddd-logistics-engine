@@ -8,6 +8,8 @@
     <Project Path="src/LogisticsEngine.SharedKernel/LogisticsEngine.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/LogisticsEngine.ArchitectureTests/LogisticsEngine.ArchitectureTests.csproj" />
+    <Project Path="tests/LogisticsEngine.IntegrationTests/LogisticsEngine.IntegrationTests.csproj" Id="b80a59ac-251c-4faf-aa88-81c7d348b95e" />
     <Project Path="tests/LogisticsEngine.UnitTests/LogisticsEngine.UnitTests.csproj" />
   </Folder>
   <Folder Name="/build/">
