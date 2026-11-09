@@ -29,15 +29,20 @@ public partial class Program
         // I controller HTTP sono adapter sottili; i casi d'uso vengono inviati con ISender a MediatR.
         builder.Services.AddControllers().AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
         builder.Services.AddAuthentication(BearerTokenAuthenticationDefaults.Scheme)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 BearerTokenAuthenticationHandler>(BearerTokenAuthenticationDefaults.Scheme, _ => { });
+
         builder.Services.AddAuthorization();
+
         builder.Services.AddHealthChecks();
+
         builder.Services.AddCors(options => options.AddPolicy(_developmentCorsPolicy, policy =>
-            policy.WithOrigins("http://localhost:5003", "https://localhost:7259")
+            policy.WithOrigins("http://localhost:5003", "https://localhost:7259", "http://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod()));
+
         builder.Services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo
@@ -70,14 +75,19 @@ public partial class Program
         // Il percorso JSON serve al provider locale; il provider Mongo usa il database indicato da MONGODB_DATABASE.
         string dataDirectory = builder.Configuration["Storage:DataDirectory"]
             ?? ResolveDataDirectory(builder.Environment.ContentRootPath);
+
         string signingKey = builder.Configuration["Authentication:SigningKey"]
             ?? throw new InvalidOperationException("Configure Authentication:SigningKey with at least 32 bytes.");
+
         string? storageProvider = builder.Configuration["STORAGE_PROVIDER"];
         // Una URI presente abilita Atlas per comodità; STORAGE_PROVIDER=Json permette di forzare il provider su file.
+
         bool useMongoDb = string.Equals(storageProvider, "MongoDb", StringComparison.OrdinalIgnoreCase)
             || (string.IsNullOrWhiteSpace(storageProvider)
                 && !string.IsNullOrWhiteSpace(builder.Configuration["MONGODB_URI"]));
+
         MongoDbOptions? mongoDbOptions = useMongoDb ? MongoDbOptions.FromEnvironment() : null;
+
         builder.Services.AddInfrastructure(dataDirectory, signingKey, mongoDbOptions);
 
         WebApplication app = builder.Build();
