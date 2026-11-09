@@ -12,6 +12,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string dataDirectory)
     {
         services.AddSingleton<IHubRepository>(new JsonHubRepository(dataDirectory));
+        services.AddSingleton<IHubConnectionRepository>(new JsonHubConnectionRepository(dataDirectory));
         services.AddSingleton<IShipmentRepository>(new JsonShipmentRepository(dataDirectory));
         return services;
     }

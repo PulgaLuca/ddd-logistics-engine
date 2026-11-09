@@ -99,4 +99,4 @@ FluentValidation e MediatR sono strumenti distinti. Il validator dichiara e valu
 
 ## Quando è adatto
 
-MediatR è utile quando l'applicazione ha diversi casi d'uso, più chiamanti o esigenze trasversali che beneficiano di un punto d'invio comune. Per un'applicazione piccola con pochi metodi, l'indirezione può superare il vantaggio: la scelta va fatta in base alla complessità reale, non per applicare un pattern a ogni costo.
+MediatR è utile quando l'applicazione ha diversi casi d'uso, più chiamanti o esigenze trasversali che beneficiano di un punto d'invio comune. Per un'applicazione piccola con pochi metodi, l'indirezione può superare il vantaggio: la scelta va fatta in base alla complessità reale.

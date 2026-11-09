@@ -30,6 +30,14 @@ public static class DependencyInjection
         services.AddSingleton<ISorter<Hub>, Sorter<Hub>>();
         services.AddSingleton<IHubSortingDomainService, HubSortingDomainService>();
         services.AddSingleton<IHubGroupingDomainService, HubGroupingDomainService>();
+        services.AddSingleton<IHubQueueDomainService, HubQueueDomainService>();
+        services.AddSingleton<IHubStackDomainService, HubStackDomainService>();
+        services.AddSingleton<IHubHashMapDomainService, HubHashMapDomainService>();
+        services.AddSingleton<IHubSetDomainService, HubSetDomainService>();
+        services.AddSingleton<IHubTreeDomainService, HubTreeDomainService>();
+        services.AddSingleton<IHubTrieDomainService, HubTrieDomainService>();
+        services.AddSingleton<IHubGraphDomainService, HubGraphDomainService>();
+        services.AddSingleton<IHubBacktrackingDomainService, HubBacktrackingDomainService>();
 
         return services;
     }
