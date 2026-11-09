@@ -14,11 +14,14 @@ public sealed class UpdateUserProfileCommandHandler(LogisticsEngine.Domain.Users
     {
         var user = repository.GetById(command.UserId);
         if (user is null)
+        {
             return Task.FromResult(Result.Failure<UserDto>(LogisticsEngine.Domain.Users.UserErrors.UserNotFound));
+        }
 
         var updateResult = user.UpdateProfile(command.FirstName, command.LastName, command.ProfessionalRole);
-        if (updateResult.IsFailure)
+        if (updateResult.IsFailure){
             return Task.FromResult(Result.Failure<UserDto>(updateResult.Error));
+        }
 
         repository.Update(user);
         return Task.FromResult(Result.Success(UserDto.From(user)));

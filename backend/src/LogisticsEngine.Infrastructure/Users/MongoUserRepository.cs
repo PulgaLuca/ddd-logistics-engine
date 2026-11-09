@@ -40,7 +40,10 @@ public sealed class MongoUserRepository(IMongoDatabase database) : IUserReposito
     {
         ArgumentNullException.ThrowIfNull(user);
         ReplaceOneResult result = _users.ReplaceOne(document => document.Id == user.Id, ToDocument(user));
-        if (result.MatchedCount == 0) throw new InvalidOperationException("User does not exist.");
+        if (result.MatchedCount == 0)
+        {
+            throw new InvalidOperationException("User does not exist.");
+        }
     }
 
     private void EnsureUniqueUserNameIndex()

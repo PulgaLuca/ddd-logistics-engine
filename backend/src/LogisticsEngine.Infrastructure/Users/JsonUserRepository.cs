@@ -56,7 +56,10 @@ public sealed class JsonUserRepository(string dataDirectory) : IUserRepository
         {
             List<UserDocument> documents = ReadDocuments();
             int index = documents.FindIndex(document => document.Id == user.Id);
-            if (index < 0) throw new InvalidOperationException("User does not exist.");
+            if (index < 0)
+            {
+                throw new InvalidOperationException("User does not exist.");
+            }
             documents[index] = ToDocument(user);
             WriteAll(documents);
         }

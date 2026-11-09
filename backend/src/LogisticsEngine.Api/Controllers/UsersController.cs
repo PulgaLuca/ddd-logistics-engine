@@ -49,7 +49,10 @@ public sealed class UsersController(
         CancellationToken cancellationToken)
     {
         GoogleAuthenticatedUser? authenticated = await googleAuthenticationService.AuthenticateAsync(request.Credential, cancellationToken);
-        if (authenticated is null) return Unauthorized(new ProblemDetails { Title = "Google authentication failed", Detail = "Il credential Google non è valido o il provider non è configurato." });
+        if (authenticated is null)
+        {
+            return Unauthorized(new ProblemDetails { Title = "Google authentication failed", Detail = "Il credential Google non è valido o il provider non è configurato." });
+        }
         UserDto user = UserDto.From(authenticated.User, authenticated.DisplayName);
         UserAccessToken token = accessTokenService.Create(user);
         return Ok(new AuthenticateUserResponse(token.Value, "Bearer", token.ExpiresAtUtc, user));
@@ -62,7 +65,10 @@ public sealed class UsersController(
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMyProfile(CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId)) return Unauthorized();
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId))
+        {
+            return Unauthorized();
+        }
         var result = await sender.Send(new GetUserProfileQuery(userId), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : ToProblem(result.Error);
     }
@@ -77,7 +83,10 @@ public sealed class UsersController(
         [FromBody] UpdateUserProfileRequest request,
         CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId)) return Unauthorized();
+        if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId))
+        {
+            return Unauthorized();
+        }
         var result = await sender.Send(new UpdateUserProfileCommand(
             userId, request.FirstName, request.LastName, request.ProfessionalRole), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : ToProblem(result.Error);

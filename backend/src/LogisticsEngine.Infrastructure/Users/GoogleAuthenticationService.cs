@@ -58,7 +58,10 @@ public sealed class GoogleAuthenticationService(
                 (!string.IsNullOrWhiteSpace(payload.GivenName) || !string.IsNullOrWhiteSpace(payload.FamilyName)))
             {
                 var profileResult = user.UpdateProfile(payload.GivenName, payload.FamilyName, user.ProfessionalRole);
-                if (profileResult.IsSuccess) repository.Update(user);
+                if (profileResult.IsSuccess)
+                {
+                    repository.Update(user);
+                }
             }
 
             string displayName = string.IsNullOrWhiteSpace(payload.Name) ? payload.Email ?? key : payload.Name!;

@@ -45,12 +45,18 @@ public sealed class User : Entity
         }
 
         Result<PasswordHash> validHash = PasswordHash.Create(passwordHash);
-        if (validHash.IsFailure) return Result.Failure<User>(validHash.Error);
+        if (validHash.IsFailure)
+        {
+            return Result.Failure<User>(validHash.Error);
+        }
         string first = firstName?.Trim() ?? string.Empty;
         string last = lastName?.Trim() ?? string.Empty;
         string position = professionalRole?.Trim() ?? string.Empty;
         if (first.Length > 80 || last.Length > 80 || position.Length > 80)
+        {
             return Result.Failure<User>(UserErrors.InvalidProfile);
+        }
+            
         return Result.Success(new User(id, validUserName.Value, validHash.Value, role, first, last, position));
     }
 
@@ -59,9 +65,11 @@ public sealed class User : Entity
         string first = firstName?.Trim() ?? string.Empty;
         string last = lastName?.Trim() ?? string.Empty;
         string position = professionalRole?.Trim() ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last) ||
-            first.Length > 80 || last.Length > 80 || position.Length > 80)
+        if (string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last) || first.Length > 80 || last.Length > 80 || position.Length > 80)
+        {
             return Result.Failure<bool>(UserErrors.InvalidProfile);
+        }
+            
         FirstName = first;
         LastName = last;
         ProfessionalRole = position;
