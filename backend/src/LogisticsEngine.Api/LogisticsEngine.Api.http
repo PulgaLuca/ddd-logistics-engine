@@ -1,0 +1,58 @@
+@LogisticsEngine.Api_HostAddress = http://localhost:5003
+@hubA = 00000000-0000-0000-0000-000000000001
+@hubB = 00000000-0000-0000-0000-000000000002
+
+### OpenAPI document (Development only)
+GET {{LogisticsEngine.Api_HostAddress}}/swagger/v1/swagger.json
+Accept: application/json
+
+### List hubs
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs
+Accept: application/json
+
+### Create a hub
+POST {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs
+Content-Type: application/json
+
+{
+  "name": "Milano",
+  "zone": "NORD"
+}
+
+### Find a hub by name
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs/by-name/Milano
+Accept: application/json
+
+### Search names with the trie
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs/algorithms/trie?prefix=Mi
+Accept: application/json
+
+### Create a weighted, bidirectional connection (replace IDs with returned Hub IDs)
+POST {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs/connections
+Content-Type: application/json
+
+{
+  "firstHubId": "{{hubA}}",
+  "secondHubId": "{{hubB}}",
+  "distance": 12.5
+}
+
+### Find the minimum-distance route
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs/algorithms/shortest-path?originId={{hubA}}&destinationId={{hubB}}
+Accept: application/json
+
+### Breadth-first traversal
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/hubs/algorithms/traversal?originId={{hubA}}&traversal=BreadthFirst
+Accept: application/json
+
+### Create a shipment
+POST {{LogisticsEngine.Api_HostAddress}}/api/v1/shipments
+Content-Type: application/json
+
+{
+  "trackingNumber": "ABCD1234"
+}
+
+### List shipments
+GET {{LogisticsEngine.Api_HostAddress}}/api/v1/shipments
+Accept: application/json

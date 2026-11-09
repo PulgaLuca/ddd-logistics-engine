@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/LogisticsEngine.Api/LogisticsEngine.Api.csproj" Id="af374c19-93d2-4244-a921-ea38ea12fa41" />
     <Project Path="src/LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
     <Project Path="src/LogisticsEngine.Console/LogisticsEngine.Console.csproj" />
     <Project Path="src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />

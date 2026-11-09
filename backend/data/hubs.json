@@ -3,5 +3,10 @@
     "Id": "97984864-4e39-45d8-b9c6-da99ad7fe09c",
     "Name": "HUB-SMPT",
     "Zone": "FC"
+  },
+  {
+    "Id": "2b129908-191e-41eb-b282-95c93533a9f8",
+    "Name": "Milano",
+    "Zone": "NORD"
   }
 ]
