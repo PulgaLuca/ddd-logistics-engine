@@ -10,10 +10,10 @@ namespace LogisticsEngine.Infrastructure.Users;
 /// <summary>Emette e verifica token compatti firmati HMAC-SHA256 per la demo locale.</summary>
 public sealed class HmacUserAccessTokenService : IUserAccessTokenService, IUserAccessTokenValidator
 {
-    private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
-    private const string Issuer = "LogisticsEngine";
-    private const string Audience = "LogisticsEngine.Api";
-    private const string HeaderJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+    private static readonly TimeSpan _tokenLifetime = TimeSpan.FromHours(1);
+    private const string _issuer = "LogisticsEngine";
+    private const string _audience = "LogisticsEngine.Api";
+    private const string _headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
     private readonly byte[] _signingKey;
 
     public HmacUserAccessTokenService(string signingKey)
@@ -29,10 +29,10 @@ public sealed class HmacUserAccessTokenService : IUserAccessTokenService, IUserA
     public UserAccessToken Create(UserDto user)
     {
         DateTimeOffset expiresAt = DateTimeOffset.FromUnixTimeSeconds(
-            DateTimeOffset.UtcNow.Add(TokenLifetime).ToUnixTimeSeconds());
+            DateTimeOffset.UtcNow.Add(_tokenLifetime).ToUnixTimeSeconds());
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(new TokenPayload(
-            user.Id.ToString(), user.UserName, user.Role, Issuer, Audience, expiresAt.ToUnixTimeSeconds()));
-        string unsignedToken = $"{Base64UrlEncode(Encoding.UTF8.GetBytes(HeaderJson))}.{Base64UrlEncode(payload)}";
+            user.Id.ToString(), user.UserName, user.Role, _issuer, _audience, expiresAt.ToUnixTimeSeconds()));
+        string unsignedToken = $"{Base64UrlEncode(Encoding.UTF8.GetBytes(_headerJson))}.{Base64UrlEncode(payload)}";
         byte[] signature = HMACSHA256.HashData(_signingKey, Encoding.ASCII.GetBytes(unsignedToken));
 
         return new UserAccessToken($"{unsignedToken}.{Base64UrlEncode(signature)}", expiresAt);
@@ -64,8 +64,8 @@ public sealed class HmacUserAccessTokenService : IUserAccessTokenService, IUserA
 
             using JsonDocument payload = JsonDocument.Parse(Base64UrlDecode(parts[1]));
             JsonElement root = payload.RootElement;
-            if (root.GetProperty("iss").GetString() != Issuer ||
-                root.GetProperty("aud").GetString() != Audience ||
+            if (root.GetProperty("iss").GetString() != _issuer ||
+                root.GetProperty("aud").GetString() != _audience ||
                 !Guid.TryParse(root.GetProperty("sub").GetString(), out Guid userId) ||
                 !Enum.TryParse(root.GetProperty("role").GetString(), out UserRole role) ||
                 !Enum.IsDefined(role))

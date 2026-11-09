@@ -9,7 +9,7 @@ namespace LogisticsEngine.Infrastructure.Shipments;
 /// <summary>Persistenza JSON delle spedizioni in un unico documento shipments.json.</summary>
 public sealed class JsonShipmentRepository(string dataDirectory) : IShipmentRepository
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly string _directory = Path.GetFullPath(dataDirectory);
     private string FilePath => Path.Combine(_directory, "shipments.json");
 
@@ -67,7 +67,7 @@ public sealed class JsonShipmentRepository(string dataDirectory) : IShipmentRepo
             return [];
         }
 
-        ShipmentDocument[] documents = JsonSerializer.Deserialize<ShipmentDocument[]>(File.ReadAllText(FilePath), JsonOptions)
+        ShipmentDocument[] documents = JsonSerializer.Deserialize<ShipmentDocument[]>(File.ReadAllText(FilePath), _jsonOptions)
             ?? throw new InvalidDataException($"Empty shipment document: {FilePath}");
         if (documents.Any(document => document is null))
         {
@@ -117,7 +117,7 @@ public sealed class JsonShipmentRepository(string dataDirectory) : IShipmentRepo
         string temporaryPath = FilePath + ".tmp";
         try
         {
-            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, JsonOptions));
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, _jsonOptions));
             File.Move(temporaryPath, FilePath, overwrite: true);
         }
         finally

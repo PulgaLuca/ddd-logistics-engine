@@ -8,7 +8,7 @@ namespace LogisticsEngine.Infrastructure.Hubs;
 /// <summary>Salva gli archi del grafo Hub nel documento hub-connections.json.</summary>
 public sealed class JsonHubConnectionRepository(string dataDirectory) : IHubConnectionRepository
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly string _directory = Path.GetFullPath(dataDirectory);
     private string FilePath => Path.Combine(_directory, "hub-connections.json");
 
@@ -19,7 +19,7 @@ public sealed class JsonHubConnectionRepository(string dataDirectory) : IHubConn
             return [];
         }
 
-        ConnectionDocument[] documents = JsonSerializer.Deserialize<ConnectionDocument[]>(File.ReadAllText(FilePath), JsonOptions)
+        ConnectionDocument[] documents = JsonSerializer.Deserialize<ConnectionDocument[]>(File.ReadAllText(FilePath), _jsonOptions)
             ?? throw new InvalidDataException($"Empty connection document: {FilePath}");
         return documents.Select(ToConnection).ToArray();
     }
@@ -46,7 +46,7 @@ public sealed class JsonHubConnectionRepository(string dataDirectory) : IHubConn
             return [];
         }
 
-        ConnectionDocument[] documents = JsonSerializer.Deserialize<ConnectionDocument[]>(File.ReadAllText(FilePath), JsonOptions)
+        ConnectionDocument[] documents = JsonSerializer.Deserialize<ConnectionDocument[]>(File.ReadAllText(FilePath), _jsonOptions)
             ?? throw new InvalidDataException($"Empty connection document: {FilePath}");
         return documents.ToList();
     }
@@ -68,7 +68,7 @@ public sealed class JsonHubConnectionRepository(string dataDirectory) : IHubConn
         string temporaryPath = FilePath + ".tmp";
         try
         {
-            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, JsonOptions));
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, _jsonOptions));
             File.Move(temporaryPath, FilePath, overwrite: true);
         }
         finally

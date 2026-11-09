@@ -25,6 +25,7 @@ public sealed class ApiWorkflowTests : IDisposable
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     ["Storage:DataDirectory"] = _dataDirectory,
+                    ["STORAGE_PROVIDER"] = "Json",
                     ["Authentication:SigningKey"] = "Integration-Test-Signing-Key-At-Least-32-Bytes-Long-For-Hmac"
                 }));
         });

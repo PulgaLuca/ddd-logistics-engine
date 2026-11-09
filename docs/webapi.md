@@ -16,7 +16,7 @@ dotnet run --project src/LogisticsEngine.Api --launch-profile http
 
 Il profilo `http` avvia l'API su `http://localhost:5003`. Per il profilo HTTPS usa `https://localhost:7259` (e HTTP su `5003`).
 
-All'avvio, il container DI verifica scope e costruibilità dei servizi. `AddApplication()` registra handler MediatR, validator e Domain Service; `AddInfrastructure()` collega i repository JSON. I dati si trovano in `backend/data`, accanto a `src` e `tests`.
+All'avvio, il container DI verifica scope e costruibilità dei servizi. `AddApplication()` registra handler MediatR, validator e Domain Service; `AddInfrastructure()` collega i repository JSON oppure MongoDB Atlas in base alla configurazione. La guida [MongoDB Atlas e persistenza](mongodb_atlas_persistence.md) spiega `.env`, database e collezioni.
 
 ## Swagger UI e OpenAPI
 

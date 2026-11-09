@@ -5,19 +5,46 @@ using LogisticsEngine.Application.Users;
 using LogisticsEngine.Infrastructure.Users;
 using LogisticsEngine.Infrastructure.Hubs;
 using LogisticsEngine.Infrastructure.Shipments;
+using LogisticsEngine.Infrastructure.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace LogisticsEngine.Infrastructure;
 
 // Extension method for DI container for earch layer
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, string dataDirectory, string? tokenSigningKey = null)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        string dataDirectory,
+        string? tokenSigningKey = null,
+        MongoDbOptions? mongoDbOptions = null)
     {
-        services.AddSingleton<IHubRepository>(new JsonHubRepository(dataDirectory));
-        services.AddSingleton<IHubConnectionRepository>(new JsonHubConnectionRepository(dataDirectory));
-        services.AddSingleton<IShipmentRepository>(new JsonShipmentRepository(dataDirectory));
-        services.AddSingleton<IUserRepository>(new JsonUserRepository(dataDirectory));
+        if (mongoDbOptions is null)
+        {
+            // JSON resta il provider locale predefinito quando non è stata configurata una connessione Atlas.
+            services.AddSingleton<IHubRepository>(new JsonHubRepository(dataDirectory));
+            services.AddSingleton<IHubConnectionRepository>(new JsonHubConnectionRepository(dataDirectory));
+            services.AddSingleton<IShipmentRepository>(new JsonShipmentRepository(dataDirectory));
+            services.AddSingleton<IUserRepository>(new JsonUserRepository(dataDirectory));
+        }
+        else
+        {
+            // MongoClient possiede un pool di connessioni: registriamo una sola istanza riutilizzata da tutti i repository.
+            MongoClientSettings settings = MongoClientSettings.FromConnectionString(mongoDbOptions.ConnectionString);
+            // Stable API v1 riduce l'impatto di cambiamenti server sulle chiamate del driver.
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+            var client = new MongoClient(settings);
+            IMongoDatabase database = client.GetDatabase(mongoDbOptions.DatabaseName);
+
+            services.AddSingleton<IMongoClient>(client);
+            services.AddSingleton(database);
+            services.AddSingleton<IHubRepository, MongoHubRepository>();
+            services.AddSingleton<IHubConnectionRepository, MongoHubConnectionRepository>();
+            services.AddSingleton<IShipmentRepository, MongoShipmentRepository>();
+            services.AddSingleton<IUserRepository, MongoUserRepository>();
+        }
+
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IUserAuthenticationService, JsonUserAuthenticationService>();
         services.AddSingleton<IUserAuthorizationService, DomainUserAuthorizationService>();

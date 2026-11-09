@@ -22,5 +22,6 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.13.0" />
   </ItemGroup>
 </Project>

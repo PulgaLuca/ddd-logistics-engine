@@ -1,6 +1,7 @@
 using LogisticsEngine.Application;
 using LogisticsEngine.Api.Authentication;
 using LogisticsEngine.Infrastructure;
+using LogisticsEngine.Infrastructure.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
@@ -14,6 +15,8 @@ public partial class Program
 
     public static void Main(string[] args)
     {
+        // Legge .env prima che il configuration builder raccolga le variabili d'ambiente.
+        DotEnvFile.LoadFromRepositoryAncestors();
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Verifica il grafo DI all'avvio: servizi non registrati e dipendenze incompatibili emergono subito.
@@ -64,12 +67,18 @@ public partial class Program
         // Application registra request handler MediatR, validator e domain service.
         builder.Services.AddApplication();
 
-        // Infrastructure collega i repository concreti JSON alle interfacce del Domain.
+        // Il percorso JSON serve al provider locale; il provider Mongo usa il database indicato da MONGODB_DATABASE.
         string dataDirectory = builder.Configuration["Storage:DataDirectory"]
             ?? ResolveDataDirectory(builder.Environment.ContentRootPath);
         string signingKey = builder.Configuration["Authentication:SigningKey"]
             ?? throw new InvalidOperationException("Configure Authentication:SigningKey with at least 32 bytes.");
-        builder.Services.AddInfrastructure(dataDirectory, signingKey);
+        string? storageProvider = builder.Configuration["STORAGE_PROVIDER"];
+        // Una URI presente abilita Atlas per comodità; STORAGE_PROVIDER=Json permette di forzare il provider su file.
+        bool useMongoDb = string.Equals(storageProvider, "MongoDb", StringComparison.OrdinalIgnoreCase)
+            || (string.IsNullOrWhiteSpace(storageProvider)
+                && !string.IsNullOrWhiteSpace(builder.Configuration["MONGODB_URI"]));
+        MongoDbOptions? mongoDbOptions = useMongoDb ? MongoDbOptions.FromEnvironment() : null;
+        builder.Services.AddInfrastructure(dataDirectory, signingKey, mongoDbOptions);
 
         WebApplication app = builder.Build();
 

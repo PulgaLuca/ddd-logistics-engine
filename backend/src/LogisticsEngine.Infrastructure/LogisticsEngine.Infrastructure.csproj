@@ -2,5 +2,6 @@
   <ItemGroup>
     <ProjectReference Include="../LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="MongoDB.Driver" />
   </ItemGroup>
 </Project>

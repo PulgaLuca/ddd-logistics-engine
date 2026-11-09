@@ -9,7 +9,7 @@ namespace LogisticsEngine.Infrastructure.Hubs;
 /// <summary>Persistenza JSON degli Hub in un unico documento hubs.json.</summary>
 public sealed class JsonHubRepository(string dataDirectory) : IHubRepository
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
     private readonly string _directory = Path.GetFullPath(dataDirectory);
     private string FilePath => Path.Combine(_directory, "hubs.json");
 
@@ -70,7 +70,7 @@ public sealed class JsonHubRepository(string dataDirectory) : IHubRepository
             return [];
         }
 
-        HubDocument[] documents = JsonSerializer.Deserialize<HubDocument[]>(File.ReadAllText(FilePath), JsonOptions)
+        HubDocument[] documents = JsonSerializer.Deserialize<HubDocument[]>(File.ReadAllText(FilePath), _jsonOptions)
             ?? throw new InvalidDataException($"Empty hub document: {FilePath}");
         if (documents.Any(document => document is null))
         {
@@ -96,7 +96,7 @@ public sealed class JsonHubRepository(string dataDirectory) : IHubRepository
         string temporaryPath = FilePath + ".tmp";
         try
         {
-            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, JsonOptions));
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(documents, _jsonOptions));
             File.Move(temporaryPath, FilePath, overwrite: true);
         }
         finally
