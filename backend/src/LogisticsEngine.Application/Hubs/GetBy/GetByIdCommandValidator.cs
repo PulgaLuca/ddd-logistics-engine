@@ -4,7 +4,7 @@ using LogisticsEngine.Domain.Hubs.Errors;
 
 namespace LogisticsEngine.Application.Hubs.GetBy;
 
-public sealed class GetByIdCommandValidator : AbstractValidator<GetByIdCommand>
+public sealed class GetByIdCommandValidator : AbstractValidator<GetHubByIdQuery>
 {
     public GetByIdCommandValidator() =>
         RuleFor(command => command.Id).NotEmpty()

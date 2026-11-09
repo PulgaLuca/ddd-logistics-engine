@@ -1,4 +1,7 @@
 using LogisticsEngine.Domain.Hubs;
+using LogisticsEngine.Domain.Shipments;
+using LogisticsEngine.Infrastructure.Hubs;
+using LogisticsEngine.Infrastructure.Shipments;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LogisticsEngine.Infrastructure;
@@ -8,6 +11,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string dataDirectory)
     {
-        return services.AddSingleton<IHubRepository>(new JsonHubRepository(dataDirectory));
+        services.AddSingleton<IHubRepository>(new JsonHubRepository(dataDirectory));
+        services.AddSingleton<IShipmentRepository>(new JsonShipmentRepository(dataDirectory));
+        return services;
     }
 }

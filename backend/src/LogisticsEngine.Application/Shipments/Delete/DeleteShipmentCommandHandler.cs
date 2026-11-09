@@ -1,22 +1,22 @@
-using LogisticsEngine.Application.Shared;
 using LogisticsEngine.Domain.Shipments;
 using LogisticsEngine.Domain.Shipments.Errors;
 using LogisticsEngine.SharedKernel;
+using MediatR;
 
 namespace LogisticsEngine.Application.Shipments.Delete;
 
 public sealed class DeleteShipmentCommandHandler(IShipmentRepository repository)
-    : ICommandHandler<DeleteShipmentCommand, Result>
+    : IRequestHandler<DeleteShipmentCommand, Result>
 {
-    public Result Handle(DeleteShipmentCommand command)
+    public Task<Result> Handle(DeleteShipmentCommand command, CancellationToken cancellationToken)
     {
         if (command.Id == Guid.Empty)
         {
-            return Result.Failure(ShipmentErrors.InvalidId);
+            return Task.FromResult(Result.Failure(ShipmentErrors.InvalidId));
         }
 
-        return repository.Delete(command.Id)
+        return Task.FromResult(repository.Delete(command.Id)
             ? Result.Success()
-            : Result.Failure(ShipmentErrors.NotFound(command.Id));
+            : Result.Failure(ShipmentErrors.NotFound(command.Id)));
     }
 }

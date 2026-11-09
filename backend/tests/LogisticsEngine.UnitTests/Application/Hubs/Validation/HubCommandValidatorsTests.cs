@@ -1,8 +1,8 @@
 using LogisticsEngine.Application.Hubs.DeleteHub;
 using LogisticsEngine.Application.Hubs.GetBy;
+using LogisticsEngine.Application.Hubs.GetById;
 using LogisticsEngine.Application.Hubs.RegisterHub;
 using LogisticsEngine.Application.Hubs.UpdateHub;
-using LogisticsEngine.Application.Hubs.Validation;
 using LogisticsEngine.Domain.Hubs.Errors;
 
 namespace LogisticsEngine.UnitTests.Application.Hubs.Validation;
@@ -45,15 +45,15 @@ public sealed class HubCommandValidatorsTests
     {
         new DeleteHubCommandValidator().Validate(new DeleteHubCommand(Guid.Empty)).Errors
             .Select(error => error.ErrorCode).ShouldContain(HubErrors.InvalidId.Code);
-        new GetByIdCommandValidator().Validate(new GetByIdCommand(Guid.Empty)).Errors
+        new GetByIdCommandValidator().Validate(new GetHubByIdQuery(Guid.Empty)).Errors
             .Select(error => error.ErrorCode).ShouldContain(HubErrors.InvalidId.Code);
     }
 
     [Fact]
     public void Get_by_name_validator_applies_name_value_object_rules()
     {
-        new GetByNameCommandValidator().Validate(new GetByNameCommand(new string('a', 121))).Errors
+        new GetByNameCommandValidator().Validate(new GetHubByNameQuery(new string('a', 121))).Errors
             .Select(error => error.ErrorCode).ShouldContain(NameErrors.InvalidName.Code);
-        new GetByNameCommandValidator().Validate(new GetByNameCommand("Roma")).IsValid.ShouldBeTrue();
+        new GetByNameCommandValidator().Validate(new GetHubByNameQuery("Roma")).IsValid.ShouldBeTrue();
     }
 }

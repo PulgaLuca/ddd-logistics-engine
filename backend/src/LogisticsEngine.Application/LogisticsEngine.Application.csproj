@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="../LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
     <PackageReference Include="FluentValidation" />
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
   <ItemGroup><InternalsVisibleTo Include="LogisticsEngine.UnitTests" /></ItemGroup>

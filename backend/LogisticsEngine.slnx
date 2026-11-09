@@ -1,10 +1,10 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/LogisticsEngine.SharedKernel/LogisticsEngine.SharedKernel.csproj" />
-    <Project Path="src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
     <Project Path="src/LogisticsEngine.Application/LogisticsEngine.Application.csproj" />
-    <Project Path="src/LogisticsEngine.Infrastructure/LogisticsEngine.Infrastructure.csproj" />
     <Project Path="src/LogisticsEngine.Console/LogisticsEngine.Console.csproj" />
+    <Project Path="src/LogisticsEngine.Domain/LogisticsEngine.Domain.csproj" />
+    <Project Path="src/LogisticsEngine.Infrastructure/LogisticsEngine.Infrastructure.csproj" />
+    <Project Path="src/LogisticsEngine.SharedKernel/LogisticsEngine.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LogisticsEngine.UnitTests/LogisticsEngine.UnitTests.csproj" />

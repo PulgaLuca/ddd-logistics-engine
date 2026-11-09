@@ -1,11 +1,11 @@
-using LogisticsEngine.Application.Shared;
 using LogisticsEngine.Domain.Shipments;
+using MediatR;
 
 namespace LogisticsEngine.Application.Shipments.GetAll;
 
 public sealed class GetAllShipmentsQueryHandler(IShipmentRepository repository)
-    : ICommandHandler<GetAllShipmentsQuery, IReadOnlyList<ShipmentDto>>
+    : IRequestHandler<GetAllShipmentsQuery, IReadOnlyList<ShipmentDto>>
 {
-    public IReadOnlyList<ShipmentDto> Handle(GetAllShipmentsQuery query) =>
-        repository.GetAll().Select(ShipmentDto.From).ToArray();
+    public Task<IReadOnlyList<ShipmentDto>> Handle(GetAllShipmentsQuery query, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<ShipmentDto>>(repository.GetAll().Select(ShipmentDto.From).ToArray());
 }

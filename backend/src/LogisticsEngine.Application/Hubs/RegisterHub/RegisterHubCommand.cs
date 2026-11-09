@@ -1,4 +1,8 @@
+using LogisticsEngine.Application.Hubs;
+using LogisticsEngine.SharedKernel;
+using MediatR;
+
 namespace LogisticsEngine.Application.Hubs.RegisterHub;
 
 /// <summary>Dati necessari a registrare un Hub.</summary>
-public sealed record RegisterHubCommand(string? Name, string? Zone);
+public sealed record RegisterHubCommand(string? Name, string? Zone) : IRequest<Result<HubDto>>;

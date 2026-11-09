@@ -1,44 +1,41 @@
 using LogisticsEngine.Application.Hubs;
-using LogisticsEngine.Application.Shared;
 using LogisticsEngine.Application.Hubs.DeleteHub;
 using LogisticsEngine.Application.Hubs.GetAll;
+using LogisticsEngine.Application.Hubs.GetBy;
 using LogisticsEngine.Application.Hubs.GetById;
 using LogisticsEngine.Application.Hubs.RegisterHub;
 using LogisticsEngine.Application.Hubs.UpdateHub;
 using LogisticsEngine.SharedKernel;
+using MediatR;
 
 namespace LogisticsEngine.Console.Controllers;
 
-/// <summary>Presenta il menu Hub e mantiene l'interazione testuale fuori dai livelli di dominio.</summary>
-public sealed class HubController(
-    ICommandHandler<GetAllCommand, IReadOnlyList<HubDto>> getAll,
-    ICommandHandler<RegisterHubCommand, Result<HubDto>> registerHub,
-    ICommandHandler<GetByIdCommand, Result<HubDto>> getById,
-    ICommandHandler<UpdateHubCommand, Result> updateHub,
-    ICommandHandler<DeleteHubCommand, Result> deleteHub)
+/// <summary>Gestisce il menu testuale e delega ogni operazione Hub a un request MediatR.</summary>
+public sealed class HubController(ISender sender)
 {
-    public void Run()
+    public async Task RunAsync(CancellationToken cancellationToken = default)
     {
         bool running = true;
         while (running)
         {
-            System.Console.WriteLine("\n--- Gestione Hub ---\n1. Elenca\n2. Crea\n3. Dettaglio\n4. Modifica\n5. Elimina\n6. Ordina per ID\n7. Raggruppa per zona\n0. Esci");
+            System.Console.WriteLine("\n--- Gestione Hub ---\n1. Elenca\n2. Crea\n3. Dettaglio per ID\n4. Modifica\n5. Elimina\n6. Cerca per nome\n0. Esci");
             switch (System.Console.ReadLine()?.Trim())
             {
-                case "1": List(); break;
-                case "2": Create(); break;
-                case "3": Show(); break;
-                case "4": Update(); break;
-                case "5": Delete(); break;
+                case "1": await ListAsync(cancellationToken); break;
+                case "2": await CreateAsync(cancellationToken); break;
+                case "3": await ShowByIdAsync(cancellationToken); break;
+                case "4": await UpdateAsync(cancellationToken); break;
+                case "5": await DeleteAsync(cancellationToken); break;
+                case "6": await ShowByNameAsync(cancellationToken); break;
                 case "0": running = false; break;
                 default: System.Console.WriteLine("Scelta non valida."); break;
             }
         }
     }
 
-    private void List()
+    private async Task ListAsync(CancellationToken cancellationToken)
     {
-        IReadOnlyList<HubDto> hubs = getAll.Handle(new GetAllCommand());
+        IReadOnlyList<HubDto> hubs = await sender.Send(new GetAllHubsQuery(), cancellationToken);
         if (hubs.Count == 0)
         {
             System.Console.WriteLine("Nessun Hub presente.");
@@ -51,59 +48,68 @@ public sealed class HubController(
         }
     }
 
-    private void Create()
+    private async Task CreateAsync(CancellationToken cancellationToken)
     {
         (string? name, string? zone) = ReadHubDetails();
-        Result<HubDto> result = registerHub.Handle(new RegisterHubCommand(name, zone));
+        Result<HubDto> result = await sender.Send(new RegisterHubCommand(name, zone), cancellationToken);
         if (result.IsSuccess)
         {
             System.Console.WriteLine($"Hub creato: {result.Value.Id}");
+            return;
         }
-        else
-        {
-            ShowError(result.Error);
-        }
+
+        ShowError(result.Error);
     }
 
-    private void Show()
+    private async Task ShowByIdAsync(CancellationToken cancellationToken)
     {
-        Result<HubDto> result = getById.Handle(new GetByIdCommand(ReadGuid()));
-        if (result.IsSuccess)
-        {
-            System.Console.WriteLine($"{result.Value.Id} | {result.Value.Name} | {result.Value.Zone}");
-        }
-        else
-        {
-            ShowError(result.Error);
-        }
+        Result<HubDto> result = await sender.Send(new GetHubByIdQuery(ReadGuid()), cancellationToken);
+        ShowHubOrError(result);
     }
 
-    private void Update()
+    private async Task ShowByNameAsync(CancellationToken cancellationToken)
+    {
+        System.Console.Write("Nome Hub: ");
+        string? name = System.Console.ReadLine();
+        Result<HubDto> result = await sender.Send(new GetHubByNameQuery(name), cancellationToken);
+        ShowHubOrError(result);
+    }
+
+    private async Task UpdateAsync(CancellationToken cancellationToken)
     {
         Guid id = ReadGuid();
         (string? name, string? zone) = ReadHubDetails();
-        Result result = updateHub.Handle(new UpdateHubCommand(id, name, zone));
+        Result result = await sender.Send(new UpdateHubCommand(id, name, zone), cancellationToken);
         if (result.IsSuccess)
         {
             System.Console.WriteLine("Hub aggiornato.");
+            return;
         }
-        else
-        {
-            ShowError(result.Error);
-        }
+
+        ShowError(result.Error);
     }
 
-    private void Delete()
+    private async Task DeleteAsync(CancellationToken cancellationToken)
     {
-        Result result = deleteHub.Handle(new DeleteHubCommand(ReadGuid()));
+        Result result = await sender.Send(new DeleteHubCommand(ReadGuid()), cancellationToken);
         if (result.IsSuccess)
         {
             System.Console.WriteLine("Hub eliminato.");
+            return;
         }
-        else
+
+        ShowError(result.Error);
+    }
+
+    private static void ShowHubOrError(Result<HubDto> result)
+    {
+        if (result.IsSuccess)
         {
-            ShowError(result.Error);
+            System.Console.WriteLine($"{result.Value.Id} | {result.Value.Name} | {result.Value.Zone}");
+            return;
         }
+
+        ShowError(result.Error);
     }
 
     private static (string? Name, string? Zone) ReadHubDetails()
