@@ -19,3 +19,26 @@ export interface ShipmentDto {
 export interface CreateShipmentRequest {
   trackingNumber: string
 }
+
+export interface HubConnectionDto {
+  firstHubId: string
+  secondHubId: string
+  distance: number
+}
+
+export interface HubPathDto {
+  hubs: HubDto[]
+  totalDistance: number
+}
+
+export interface HubGroupDto {
+  zone: string
+  hubs: HubDto[]
+}
+
+export interface HubCollectionsDto {
+  queueOrder: HubDto[]
+  stackOrder: HubDto[]
+  idHashMap: Record<string, HubDto>
+  zones: string[]
+}

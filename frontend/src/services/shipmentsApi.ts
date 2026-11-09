@@ -8,4 +8,8 @@ export const shipmentsApi = {
     method: 'POST',
     body: JSON.stringify(shipment),
   }),
+  updateStatus: (id: string, status: ShipmentDto['status']) => request<void>(`/shipments/${id}/status`, {
+    method: 'PUT', body: JSON.stringify({ status }),
+  }),
+  delete: (id: string) => request<void>(`/shipments/${id}`, { method: 'DELETE' }),
 }

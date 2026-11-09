@@ -2,7 +2,7 @@
 
 ## Obiettivo
 
-Il frontend è la parte dell'applicazione con cui interagisce l'utente nel browser. Questa piccola interfaccia dimostrativa mostra come organizzare il codice client e come inviare richieste HTTP alla Web API per leggere e creare hub e spedizioni.
+Il frontend è la parte dell'applicazione con cui interagisce l'utente nel browser. Questa interfaccia dimostrativa mostra come organizzare il codice client e inviare richieste HTTP alla Web API: include dashboard, gestione hub e spedizioni e un laboratorio per i domain services sugli hub.
 
 Il frontend presenta dati e raccoglie input. Le regole applicative e di dominio restano nel backend: il browser non accede direttamente a MongoDB o ai file JSON. Il flusso è:
 
@@ -34,12 +34,38 @@ frontend/
     │   ├── hubsApi.ts          # endpoint relativi agli hub
     │   └── shipmentsApi.ts     # endpoint relativi alle spedizioni
     ├── views/
-    │   ├── HubsView.vue        # interfaccia della sezione Hub
-    │   └── ShipmentsView.vue   # interfaccia della sezione Spedizioni
+    │   ├── OverviewView.vue    # riepilogo delle risorse e accesso alle sezioni
+    │   ├── HubsView.vue        # ricerca, creazione, modifica ed eliminazione Hub
+    │   ├── ShipmentsView.vue   # tracking, creazione, stato ed eliminazione
+    │   └── NetworkView.vue     # grafo e chiamate agli algoritmi Hub
     └── style.css               # presentazione condivisa
 ```
 
 La separazione mantiene ogni responsabilità in un posto facile da trovare: le viste gestiscono stato e interazione, i servizi conoscono gli endpoint, il client HTTP gestisce i dettagli comuni del trasporto. I DTO TypeScript descrivono il JSON restituito dall'API e non sostituiscono gli oggetti di dominio C#.
+
+## Grafo e domain services
+
+La pagina **Rete & algoritmi** usa Cytoscape.js per disegnare gli hub come nodi e le connessioni pesate come archi. Cytoscape si occupa della presentazione; i calcoli continuano a essere eseguiti dai domain services nel backend e arrivano alla UI come DTO.
+
+| Funzione nella UI | Endpoint | Concetto mostrato |
+| --- | --- | --- |
+| Percorso minimo | `GET /hubs/algorithms/shortest-path` | Dijkstra e somma delle distanze |
+| Cammini semplici | `GET /hubs/algorithms/simple-paths` | Backtracking con limite dei risultati |
+| Visita BFS o DFS | `GET /hubs/algorithms/traversal` | Visita breadth-first o depth-first del grafo |
+| Crea collegamento | `POST /hubs/connections` | Arco bidirezionale con peso/distanza |
+| Coda, pila, mappa e insieme | `GET /hubs/algorithms/collections` | Queue FIFO, Stack LIFO, HashMap per ID e Set di zone |
+| Albero binario | `GET /hubs/algorithms/binary-tree` | Visita in-order |
+| Trie | `GET /hubs/algorithms/trie?prefix=...` | Ricerca dei nomi per prefisso |
+| Ordinamento | `GET /hubs/algorithms/sort?property=Name` | Ordinamento per ID, nome o zona |
+| Raggruppamento | `GET /hubs/algorithms/groups-by-zone` | Raggruppamento per zona |
+
+Quando Dijkstra trova un percorso, il frontend evidenzia nodi e archi corrispondenti. BFS/DFS evidenziano la sequenza visitata. È possibile selezionare un cammino semplice per evidenziarlo. Un collegamento creato dalla UI viene salvato tramite API e la mappa viene ricaricata.
+
+## Hub, spedizioni e autorizzazione
+
+La pagina Hub consente ricerca, creazione, modifica ed eliminazione. La pagina Spedizioni permette di creare record, cercarli, richiedere una transizione di stato e cancellarli. La UI inoltra la transizione al backend: il Domain decide se è valida.
+
+**Gli endpoint Hub e Shipment sono attualmente pubblici.** Il backend espone registrazione/login e una verifica autenticata dei permessi, ma questo frontend non usa token o ruoli per limitare le sezioni. Per rendere effettivi i ruoli occorre prima proteggere i relativi endpoint nel backend con autenticazione e policy/permessi; nascondere un pulsante nel frontend non è una misura di sicurezza.
 
 ## Come avviene una chiamata
 
@@ -76,13 +102,13 @@ Prerequisiti: .NET SDK richiesto dalla soluzione, Node.js e npm.
    npm run dev
    ```
 
-3. Apri `http://localhost:5173`. La navigazione consente di consultare e creare hub e spedizioni.
+3. Apri `http://localhost:5173`. La navigazione consente di usare dashboard, hub, spedizioni e laboratorio del grafo.
 
 Vite usa l'origine `http://localhost:5173`; la policy CORS di sviluppo dell'API consente tale origine. CORS è un controllo applicato dal browser: l'API deve dichiarare esplicitamente quali origini web possono inviarle richieste. L'autorizzazione CORS non sostituisce autenticazione o autorizzazione.
 
 ## Configurare l'URL dell'API
 
-`frontend/.env.example` documenta la configurazione locale. Per cambiare l'indirizzo, crea `frontend/.env.local` (ignorato da Git) con, ad esempio:
+`frontend/.env.example` documenta la configurazione locale e seleziona per impostazione predefinita il profilo HTTPS. Per cambiare l'indirizzo, imposta `frontend/.env.local` (ignorato da Git) con, ad esempio:
 
 ```dotenv
 VITE_API_BASE_URL=https://localhost:7259/api/v1

@@ -43,13 +43,22 @@ public sealed class MongoHubRepository(IMongoDatabase database) : IHubRepository
 
     public bool Update(Hub hub)
     {
-        // $set modifica i dati senza sostituire `_id`, che MongoDB considera immutabile.
-        // $unset rimuove i campi legacy maiuscoli dopo aver scritto i campi canonici in minuscolo.
-        UpdateDefinition<HubDocument> update = Builders<HubDocument>.Update
-            .Set(document => document.Name, hub.Name.Value)
-            .Set(document => document.Zone, hub.Zone.Code)
-            .Unset("Name")
-            .Unset("Zone");
+        // Usiamo i nomi BSON espliciti: il builder tipizzato mappa anche Unset("Name") alla proprietà
+        // Name, quindi al campo `name`, creando un conflitto con il Set sullo stesso percorso.
+        // Nel BSON raw `name` e `Name` restano invece distinti e rimuoviamo solo i campi legacy maiuscoli.
+        UpdateDefinition<HubDocument> update = new BsonDocumentUpdateDefinition<HubDocument>(new BsonDocument
+        {
+            ["$set"] = new BsonDocument
+            {
+                ["name"] = hub.Name.Value,
+                ["zone"] = hub.Zone.Code
+            },
+            ["$unset"] = new BsonDocument
+            {
+                ["Name"] = string.Empty,
+                ["Zone"] = string.Empty
+            }
+        });
         UpdateResult result = _hubs.UpdateOne(ByDomainId(hub.Id), update);
         return result.MatchedCount > 0;
     }
